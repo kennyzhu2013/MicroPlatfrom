@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package go.micro.os.trace;
+
+message Annotation {
+	enum Type {
+		UNKNOWN = 0;
+		START = 1;
+		END = 2;
+		TIMEOUT = 3;
+		CLIENT_REQUEST = 4;
+		CLIENT_RESPONSE = 5;
+		CLIENT_PUBLICATION = 6;
+		SERVER_REQUEST = 7;
+		SERVER_RESPONSE = 8;
+		SERVER_SUBSCRIPTION = 9;
+	}
+
+	int64 timestamp = 1;
+	Type type = 2;
+	string key = 3;
+	bytes value = 4;
+	map<string,string> debug = 5;
+	Service service = 6;
+}
+
+message Span {
+	// name; topic, service method, etc
+	string name = 1;
+	// id of the span
+	string id = 2;
+	// trace root id
+	string trace_id = 3;
+	// parent span id
+	string parent_id = 4;
+	// microseconds from epoch. start of span
+	int64 timestamp = 5;
+	// microseconds. duration of span
+	int64 duration = 6;
+	// should persist?
+	bool debug = 7;
+	// source origin of the request
+	Service source = 8;
+	// destination of the request
+	Service destination = 9;
+	// annotations
+	repeated Annotation annotations = 10;
+}
+
+
+message Service {
+        string name = 1;
+        string version = 2;
+        map<string,string> metadata = 3;
+        repeated Node nodes = 4;
+}
+
+message Node {
+        string id = 1;
+        string address = 2;
+        int64 port = 3;
+        map<string,string> metadata = 4;
+}

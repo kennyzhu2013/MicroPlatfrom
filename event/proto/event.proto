@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package go.micro.os.event;
+
+message Record {
+        string id = 1;
+        string type = 2;
+        string origin = 3;
+        int64 timestamp = 4;
+        string root_id = 5;
+        map<string,string> metadata = 6;
+        string data = 7;
+}

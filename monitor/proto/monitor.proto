@@ -1,0 +1,100 @@
+syntax = "proto3";
+
+package go.micro.os.monitor;
+
+message Service {
+	string name = 1;
+	string version = 2;
+	repeated Node nodes= 3;
+}
+
+message Node {
+	string id = 1;
+}
+
+message HealthCheck {
+	enum Status {
+		UNKNOWN = 0;
+		OK = 1;
+		ERROR = 2;
+	}
+
+	string id = 1; // "go.micro.health.check"
+	string description = 2; // "This is a health check for ..."
+	int64 timestamp = 3; // "unix timestamp"
+	int64 interval = 4;
+	int64 ttl = 5;
+	Service service = 6;
+	Status status = 7;
+	map<string,string> results = 8;
+	string error = 9;
+}
+
+message Status {
+	enum Status {
+		UNKNOWN = 0;
+		STARTED = 1;
+		RUNNING = 2;
+		STOPPED = 3;
+	}
+
+	Service service = 1;
+	Status status = 2;
+	string info = 3;
+	int64 timestamp = 4;
+	int64 interval = 5;
+	int64 ttl = 6;
+}
+
+message Stats {
+	Service service = 1;
+	int64 timestamp = 2;
+	int64 interval = 3;
+	int64 ttl = 4;
+	CPU cpu = 5;
+	Memory memory = 6;
+	Disk disk = 7;
+	Runtime runtime = 8;
+	repeated Endpoint endpoints = 9;
+}
+
+message Endpoint {
+	string service = 1;
+	// Name of the endpoint
+	string method = 2;
+	// Success and error rates
+	Metrics errors = 3;
+	Metrics success = 4;
+	Metrics dropped = 5;
+}
+
+message Metrics {
+	int64 count = 1;
+	double mean = 2;
+	double std_dev = 3;
+	double upper95 = 4;
+}
+
+message CPU {
+	uint64 user_time = 1;
+	uint64 system_time = 2;
+	uint64 vol_ctx_switch = 3;
+	uint64 inv_ctx_switch = 4;
+}
+
+message Memory {
+	uint64 max_rss = 1;
+}
+
+message Disk {
+	// blocks read from disk
+	uint64 in_block = 1;
+	// blocks written to disk
+	uint64 ou_block = 2;
+}
+
+message Runtime {
+	uint64 num_threads = 1;
+	uint64 heap_total = 2;
+	uint64 heap_in_use = 3;
+}

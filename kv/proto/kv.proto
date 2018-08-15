@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package go.micro.os.kv;
+
+service KV {
+	rpc Get(GetRequest) returns (GetResponse) {}
+	rpc Put(PutRequest) returns (PutResponse) {}
+	rpc Del(DelRequest) returns (DelResponse) {}
+}
+
+message Item {
+	string key = 1;
+	bytes value = 2;
+	int64 expiration = 3; // duration in seconds
+}
+
+message GetRequest {
+	string key = 1;
+}
+
+message GetResponse {
+	Item item = 1;
+}
+
+message PutRequest {
+	Item item = 1;
+}
+
+message PutResponse {
+}
+
+message DelRequest {
+	string key = 1;
+}
+
+message DelResponse {
+}

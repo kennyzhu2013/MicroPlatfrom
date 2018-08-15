@@ -1,0 +1,69 @@
+syntax = "proto3";
+
+package go.micro.os.router;
+
+message Stats {
+	// service for these stats match
+	Service service = 1;
+	// client making the requests
+	Service client = 2;
+	// time of the sample
+	int64 timestamp = 3;
+	// duration of the sample
+	int64 duration = 4;
+	// Selected stats
+	Selected selected = 5;
+	// Endpoint stats
+	repeated EndpointStats endpoint_stats = 6;
+}
+
+message Service {
+	string name = 1;
+	string version = 2;
+	map<string,string> metadata = 3;
+	repeated Endpoint endpoints = 4;
+	repeated Node nodes = 5;
+}
+
+message Node {
+        string id = 1;
+        string address = 2;
+        int64 port = 3;
+        map<string,string> metadata = 4;
+}
+
+message Endpoint {
+	string name = 1;
+	Value request = 2;
+	Value response = 3;
+	map<string, string> metadata = 4;
+}
+
+message Value {
+	string name = 1;
+	string type = 2;
+	repeated Value values = 3;
+}
+
+message Selected {
+	Metrics errors = 7;
+	Metrics success = 5;
+	Metrics dropped = 6;
+}
+
+message EndpointStats {
+	// Name of the endpoint
+	string name = 1;
+	// Success and error rates
+	Metrics errors = 2;
+	Metrics success = 3;
+	Metrics dropped = 4;
+}
+
+message Metrics {
+	int64 count = 1;
+	double mean = 2;
+	double std_dev = 3;
+	double upper95 = 4;
+}
+

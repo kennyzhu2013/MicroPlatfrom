@@ -1,0 +1,16 @@
+{
+	"app": {
+		"LogLevel": "1",
+		"LogPath": "./log/",
+		"Version": "1",
+		"SrvName": "go.micro.srv.dbservice"
+	},
+	"database": {
+		"DriverName":"mysql",
+		"DataSource":"root:123456@tcp(mysql-test:40012)/test?charset=utf8",
+		"MaxConnNum": 20000,
+		"MaxIdle": 30,
+		"MaxOpen": 50,
+		"DebugLog": false
+	}
+}

@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package go.micro.os.auth;
+
+message Token {
+	string access_token = 1;
+	string token_type = 2;
+	string refresh_token = 3;
+	int64 expires_at = 4;
+	repeated string scopes = 5;
+	// metadata associated with the token
+	map<string,string> metadata = 6;
+}
+
