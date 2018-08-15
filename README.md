@@ -1,6 +1,6 @@
 # Go OS [![License](https://img.shields.io/:license-apache-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![GoDoc](https://godoc.org/github.com/micro/go-os?status.svg)](https://godoc.org/github.com/micro/go-os) [![Travis CI](https://api.travis-ci.org/micro/go-os.svg?branch=master)](https://travis-ci.org/micro/go-os) [![Go Report Card](https://goreportcard.com/badge/micro/go-os)](https://goreportcard.com/report/github.com/micro/go-os)
 
-Go OS is a client library for [Micro OS](https://github.com/micro/os)
+MicroPlatform is a platform library for micro services including app and db services.
 
 NOTE: This is still a work in progress
 
