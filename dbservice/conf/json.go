@@ -20,6 +20,7 @@ var OrmConf struct{
 	MaxIdle    int    `json:"MaxIdle"`
 	MaxOpen    int    `json:"MaxOpen"`
 	DebugLog   bool   `json:"DebugLog"`
+	IsProMode  bool   `json:"IsProMode"`
 }
 
 var AppConf struct{

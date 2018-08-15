@@ -11,6 +11,7 @@
 		"MaxConnNum": 20000,
 		"MaxIdle": 30,
 		"MaxOpen": 50,
-		"DebugLog": false
+		"DebugLog": false,
+		"IsProMode": false
 	}
 }

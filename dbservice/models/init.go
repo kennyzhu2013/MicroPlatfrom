@@ -1,17 +1,23 @@
 package models
 
 import (
+	"os"
+	"errors"
+
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
 	"github.com/go-xorm/core"
 
 	//self library..
 	"github.com/kennyzhu/go-os/dbservice/conf"
-	"os"
 )
 
-//singleton instance..
-var orm *xorm.Engine
+var (
+	ErrNotExist = errors.New("not exist")
+
+	//singleton instance..
+    orm *xorm.Engine
+)
 
 //need test promode ..
 func Init(isProMode bool) {
@@ -29,14 +35,16 @@ func Init(isProMode bool) {
 		orm.Logger().SetLevel(core.LOG_INFO)
 	}
 
-	//simple log..
-	sqlWriter, err := os.Create(conf.LogOutPutPath + "sql.log")
-	logger := xorm.NewSimpleLogger(sqlWriter)
+
 	if !isProMode {
 		orm.ShowSQL(true)
+
+		//simple log..
+		sqlWriter,_ := os.Create(conf.LogOutPutPath + "sql.log")
+		logger := xorm.NewSimpleLogger(sqlWriter)
 		logger.ShowSQL(true)
+		orm.SetLogger(logger)
 	}
-	orm.SetLogger(logger)
 
 	//struct sync...
 	//if not define then create...

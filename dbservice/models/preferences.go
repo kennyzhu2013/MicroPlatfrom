@@ -1,4 +1,10 @@
-//create by xorm reverse mysql command..
+/*
+@Time : 2018/8/15 19:05
+@Author : kennyzhu
+@File : base.go
+@Software: GoLand
+@Others: create by xorm reverse mysql command.
+*/
 package models
 
 type Preferences struct {
