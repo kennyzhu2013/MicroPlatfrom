@@ -16,7 +16,7 @@ Package     |   Built-in Plugin	|	Description
 -------     |   --------	|	---------
 [auth](https://godoc.org/github.com/micro/go-os/auth)	|	auth-srv	|   authentication and authorisation for users and services	
 [config](https://godoc.org/github.com/micro/go-os/config)	|	config-srv	|   dynamic configuration which is namespaced and versioned
-[db](https://godoc.org/github.com/micro/go-os/db)		|	db-srv		| distributed database abstraction
+[dbservice](https://godoc.org/github.com/micro/go-os/dbservice)		|	db-srv		| distributed database server
 [discovery](https://godoc.org/github.com/micro/go-os/discovery)	|	discovery-srv	|   extends the go-micro registry to add heartbeating, etc
 [event](https://godoc.org/github.com/micro/go-os/event)	|	event-srv	|	event publication, subscription and aggregation 
 [kv](https://godoc.org/github.com/micro/go-os/kv)		|	distributed in-memory	|   simply key value layered on memcached, etcd, consul 
