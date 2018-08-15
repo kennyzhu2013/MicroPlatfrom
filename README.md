@@ -1,6 +1,6 @@
-# Go OS [![License](https://img.shields.io/:license-apache-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![GoDoc](https://godoc.org/github.com/micro/go-os?status.svg)](https://godoc.org/github.com/micro/go-os) [![Travis CI](https://api.travis-ci.org/micro/go-os.svg?branch=master)](https://travis-ci.org/micro/go-os) [![Go Report Card](https://goreportcard.com/badge/micro/go-os)](https://goreportcard.com/report/github.com/micro/go-os)
+# Micro platform [![License](https://img.shields.io/:license-apache-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![GoDoc](https://godoc.org/github.com/micro/go-os?status.svg)](https://godoc.org/github.com/micro/go-os) [![Travis CI](https://api.travis-ci.org/micro/go-os.svg?branch=master)](https://travis-ci.org/micro/go-os) [![Go Report Card](https://goreportcard.com/badge/micro/go-os)](https://goreportcard.com/report/github.com/micro/go-os) [![Go Help](https://studygolang.com/pkgdoc)]
 
-Go OS is a client library for [Micro OS](https://github.com/micro/os)
+MicroPlatform is a platform library for micro services including app and db services.
 
 NOTE: This is still a work in progress
 
@@ -16,7 +16,7 @@ Package     |   Built-in Plugin	|	Description
 -------     |   --------	|	---------
 [auth](https://godoc.org/github.com/micro/go-os/auth)	|	auth-srv	|   authentication and authorisation for users and services	
 [config](https://godoc.org/github.com/micro/go-os/config)	|	config-srv	|   dynamic configuration which is namespaced and versioned
-[db](https://godoc.org/github.com/micro/go-os/db)		|	db-srv		| distributed database abstraction
+[dbservice](https://godoc.org/github.com/micro/go-os/dbservice)		|	db-srv		| distributed database server
 [discovery](https://godoc.org/github.com/micro/go-os/discovery)	|	discovery-srv	|   extends the go-micro registry to add heartbeating, etc
 [event](https://godoc.org/github.com/micro/go-os/event)	|	event-srv	|	event publication, subscription and aggregation 
 [kv](https://godoc.org/github.com/micro/go-os/kv)		|	distributed in-memory	|   simply key value layered on memcached, etcd, consul 
