@@ -1,8 +1,8 @@
 {
 	"app": {
-		"LogLevel": "1",
-		"LogPath": "./log/",
-		"Version": "1",
+		"LogLevel": 1,
+		"LogPath": "./log/dbservice.log",
+		"Version": 1,
 		"SrvName": "go.micro.srv.dbservice"
 	},
 	"database": {
@@ -12,6 +12,8 @@
 		"MaxIdle": 30,
 		"MaxOpen": 50,
 		"DebugLog": false,
-		"IsProMode": false
+		"IsProMode": false,
+		"TableHashValue": 0,
+		"UseCache": false
 	}
 }

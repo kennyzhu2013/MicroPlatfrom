@@ -34,6 +34,7 @@ func newOS(opts ...Option) Log {
 		options.Outputs = []Output{NewOutput()}
 	}
 
+	//https://blog.csdn.net/linuxandroidwince/article/details/79113398...
 	o := &os{
 		&logger{
 			f: make(Fields),

@@ -1,5 +1,6 @@
 package conf
 
+import . "time"
 
 //for log conf..
 //conf written in go...
@@ -11,4 +12,6 @@ var (
 	//database conf
 	OrmMaxIdleConn = 30
 	OrmMaxOpen = 50
+	OrmCacheTime = Hour
+	OrmCacheCount = 1024 * 1024
 )

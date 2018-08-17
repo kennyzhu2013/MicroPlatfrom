@@ -7,7 +7,7 @@ package file
 */
 
 import (
-	"github.com/micro/go-os/log"
+	"github.com/kennyzhu/go-os/log"
 )
 
 func NewOutput(opts ...log.OutputOption) log.Output {

@@ -1,48 +1,61 @@
+//Every handler runs in a goroutine.
 package handler
 
 import (
 	"context"
 
-	"github.com/micro/go-log"
-
+	"github.com/kennyzhu/go-os/log"
+	"github.com/kennyzhu/go-os/dbservice/models"
 	example "github.com/kennyzhu/go-os/dbservice/proto/example"
 )
 
 type Example struct{}
 
 // Call is a single request handler called via client.Call or the generated client code
-func (e *Example) Call(ctx context.Context, req *example.Request, rsp *example.Response) error {
-	log.Log("Received Example.Call request")
-	rsp.Msg = "Hello " + req.Name
+func (e *Example) GetPreference(ctx context.Context, req *example.PreferenceRequest, rsp *example.PreferenceResponse) error {
+	log.Infof("Received Example.GetPreference request,id %v", req.User)
+
+	//select db to request..
+	//no sharding here..
+	userId := req.User
+	preferResult := &models.Preferences{}
+	err := models.GetById(int64(userId), preferResult)
+	if err != nil {
+		rsp.ResultCode = 500
+		log.Error(err)
+	} else {
+		rsp.ResultCode = 200
+	}
+
+	//protobuf中所有对象都是指针....
+	rsp.Prefer = new(example.Preference)
+	rsp.Prefer.User = int32(preferResult.User)
+	rsp.Prefer.Name = preferResult.Name
+	rsp.Prefer.Value = preferResult.Value
 	return nil
 }
 
-// Stream is a server side stream handler called via client.Stream or the generated client code
-func (e *Example) Stream(ctx context.Context, req *example.StreamingRequest, stream example.Example_StreamStream) error {
-	log.Logf("Received Example.Stream request with count: %d", req.Count)
+// get all list.
+func (e *Example) GetPreferencesList(ctx context.Context, req *example.PreferencesListRequest, rsp * example.PreferencesListResponse) error {
+	log.Info("Received Example.GetPreferencesList request with limits: ", req.Limit)
 
-	for i := 0; i < int(req.Count); i++ {
-		log.Logf("Responding: %d", i)
-		if err := stream.Send(&example.StreamingResponse{
-			Count: int64(i),
-		}); err != nil {
-			return err
-		}
+	pPreferList := make([]*models.Preferences, 0)
+	err := models.Find(int(req.Limit), int(req.Index), &pPreferList)
+	if err != nil {
+		rsp.ResultCode = 500
+		log.Error(err)
+	} else {
+		rsp.ResultCode = 200
 	}
 
+	for _,prefer := range pPreferList {
+		preference := &example.Preference{}
+		preference.User = int32(prefer.User)
+		preference.Value = prefer.Value
+		preference.Name = prefer.Name
+		rsp.Prefers = append(rsp.Prefers, preference)
+	}
+
+	log.Info("Example.GetPreferencesList result counts: %d", len(rsp.Prefers))
 	return nil
-}
-
-// PingPong is a bidirectional stream handler called via client.Stream or the generated client code
-func (e *Example) PingPong(ctx context.Context, stream example.Example_PingPongStream) error {
-	for {
-		req, err := stream.Recv()
-		if err != nil {
-			return err
-		}
-		log.Logf("Got ping %v", req.Stroke)
-		if err := stream.Send(&example.Pong{Stroke: req.Stroke}); err != nil {
-			return err
-		}
-	}
 }

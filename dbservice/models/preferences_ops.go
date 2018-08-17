@@ -7,4 +7,4 @@ func (m *Preferences) String() string {
 }
 
 //base operations of this model define here..
-//func1
+//func1 of complex select
