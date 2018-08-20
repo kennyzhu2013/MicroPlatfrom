@@ -47,9 +47,6 @@ var AppConf struct{
 	SetId             	int `json:"GlobalSetId"`
 }
 
-//logger
-var Logger log.Log
-
 //self init...
 func init() {
 	//read config

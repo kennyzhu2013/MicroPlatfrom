@@ -1,0 +1,9 @@
+{
+  "api": {
+    "LogLevel": 1,
+    "LogPath": "./log/dbapi.log",
+    "Version": 1,
+    "ApiName": "go.micro.api.dbservice",
+    "SrvName": "go.micro.srv.dbservice"
+  }
+}

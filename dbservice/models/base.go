@@ -4,6 +4,7 @@
 @File : base.go
 @Software: GoLand
 @Others: model base operation
+@refer：github.com/go-tango/wego/blob/master/models/base.go.
 */
 package models
 
