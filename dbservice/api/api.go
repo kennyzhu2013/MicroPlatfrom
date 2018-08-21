@@ -1,17 +1,13 @@
 package main
 
 import (
-	"encoding/json"
-	example "github.com/kennyzhu/go-os/dbservice/proto/example"
 	"github.com/micro/go-micro"
-	"github.com/micro/go-micro/errors"
-	api "github.com/kennyzhu/go-os/dbservice/proto/api"
-
+	. "github.com/kennyzhu/go-os/dbservice/api/conf"
 	"github.com/kennyzhu/go-os/log"
-	"context"
-	"strconv"
+	"github.com/kennyzhu/go-os/dbservice/api/modules"
 )
 
+/*
 type Preferences struct {
 	Client example.PreferencesService
 }
@@ -50,24 +46,26 @@ func (s *Preferences) PreferenceList(ctx context.Context, req *api.Request, rsp 
 
 	rsp.Body = string(b)
 	return nil
-}
+}*/
 
 //usage: curl "http://localhost:8002/dbservice/Preferences/PreferenceList?limit=2&index=1".
 //       or http.Post("http://localhost:8002/dbservice/Preferences/PreferenceList", "application/protobuf", bytes.NewReader(req))
 //       or json:
 func main() {
+	Init("./conf/api.json")
 	service := micro.NewService(
 		micro.Name(AppConf.ApiName), //eg: "go.micro.api.dbservice".
 	)
 
 	// parse command line flags
 	service.Init()
-
+	modules.Init( service.Server(), service.Client() )
+	/*
 	service.Server().Handle(
 		service.Server().NewHandler(
 			&Preferences{Client: example.NewPreferencesService(AppConf.SrvName, service.Client())},
 		),
-	)
+	)*/
 
 	if err := service.Run(); err != nil {
 		log.Fatal(err)

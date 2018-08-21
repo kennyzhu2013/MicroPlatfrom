@@ -10,6 +10,7 @@ import (
 )
 
 //default api, refer examples/api/default/default.go
+//may be written in java
 func main() {
 
 	//getParams := make(map[string]*api.Pair)

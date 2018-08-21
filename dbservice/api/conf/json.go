@@ -1,11 +1,11 @@
 /*
-@Time : 2018/8/20 16:08 
+@Time : 2018/8/21 11:28 
 @Author : kenny zhu
-@File : conf.go
+@File : json.go
 @Software: GoLand
 @Others:
 */
-package main
+package conf
 
 import (
 	"github.com/micro/go-config"
@@ -27,11 +27,11 @@ var AppConf struct{
 	//Todo:
 }
 
-//self init...
-func init() {
+//self init...configFile = "./conf/api.json"...
+func Init(configFile string) {
 	//read config
 	if err := config.Load(file.NewSource(
-		file.WithPath("./conf/api.json"),
+		file.WithPath(configFile),
 	)); err != nil {
 		fmt.Println(err)
 		return
@@ -58,3 +58,4 @@ func init() {
 
 	log.Infof("logger init, path:%v", AppConf.LogPath)
 }
+
