@@ -48,13 +48,13 @@ func (s *Preferences) PreferenceList(ctx context.Context, req *api.Request, rsp 
 	return nil
 }*/
 
-//usage: curl "http://localhost:8002/dbservice/Preferences/PreferenceList?limit=2&index=1".
+// usage: curl "http://localhost:8002/dbservice/Preferences/PreferenceList?limit=2&index=1".
 //       or http.Post("http://localhost:8002/dbservice/Preferences/PreferenceList", "application/protobuf", bytes.NewReader(req))
 //       or json:
 func main() {
 	Init("./conf/api.json")
 	service := micro.NewService(
-		micro.Name(AppConf.ApiName), //eg: "go.micro.api.dbservice".
+		micro.Name(AppConf.ApiName), // eg: "go.micro.api.dbservice".
 	)
 
 	// parse command line flags

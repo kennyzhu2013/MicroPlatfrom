@@ -9,24 +9,23 @@ import (
 	example "github.com/kennyzhu/go-os/dbservice/proto/example"
 )
 
-//default api, refer examples/api/default/default.go
-//may be written in java
+// default api, refer examples/api/default/default.go
+// may be written in java
 func main() {
-
-	//getParams := make(map[string]*api.Pair)
-	//indexValues := []string{"1", }
-	//valuePair := api.Pair{Key: "", Values:indexValues, }
-	//getParams["index"] = &api.Pair{ Key: "", Values:[]string{"1", },}
-	//protobuf must define itself....
 	/*
 	req, err := proto.Marshal(&example.PreferencesListRequest{ Index:1, Limit:2, })
 	if err != nil {
 		fmt.Println(err)
 		return
+	}
+
+	r, err := http.Post("http://localhost:8080/greeter/hello", "application/protobuf", bytes.NewReader(req))
+	if err != nil {
+		fmt.Println(err)
+		return
 	}*/
-	//for http...
-	//"application/json"
-	//r, err := http.Get("http://localhost:8002/dbservice/Preferences/PreferenceList", "application/protobuf", bytes.NewReader(req))
+	// for http：" application/json"
+	// r, err := http.Post("http://localhost:8002/dbservice/Preferences/PreferenceList", "application/json", bytes.NewReader(req))
 	r, err := http.Get("http://localhost:8002/dbservice/Preferences/PreferenceList?limit=2&index=1")
 	if err != nil {
 		fmt.Println(err)
@@ -41,7 +40,6 @@ func main() {
 	}
 
 	fmt.Println(b)
-	//return json...
 	fmt.Println(r.StatusCode)
 	var body map[string]interface{}
 	if err := json.Unmarshal(b, &body); err != nil {
@@ -51,7 +49,6 @@ func main() {
 
 	fmt.Println(body["message"])
 	rsp := make([]example.Preference, 0)
-	//var rsp example.Preference[]
 	if err := json.Unmarshal( []byte( body["message"].(string) ) , &rsp); err != nil {
 		fmt.Println(err)
 		return
