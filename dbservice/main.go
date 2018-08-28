@@ -2,7 +2,7 @@ package main
 
 //import "C"
 import (
-	//"github.com/kennyzhu/go-os/dbservice/subscriber"
+	// "github.com/kennyzhu/go-os/dbservice/subscriber"
 
 	"github.com/micro/go-micro"
 

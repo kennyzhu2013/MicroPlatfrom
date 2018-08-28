@@ -8,26 +8,25 @@
 package modules
 
 import (
-	"github.com/gin-gonic/gin"
+	"github.com/kataras/iris"
 
 	"github.com/kennyzhu/go-os/log"
 )
 
 var Modules struct{
-	Router *gin.Engine
+	App *iris.Application
+
 }
 
 // self init...
 func init() {
-	// gin.SetMode(gin.ReleaseMode)
-	Modules.Router = gin.Default()
-	Init()
+	Modules.App = iris.Default()
 }
 
-func NoModules(ctx *gin.Context) {
+func NoModules(ctx iris.Context) {
 	log.Info("Received NoModules API request")
 
-	ctx.JSON(200, map[string]string{
+	ctx.JSON(iris.Map{
 		"message": "No module defined!",
 	})
 }

@@ -4,7 +4,7 @@ import (
 	"sync"
 
 	"github.com/micro/go-micro/registry"
-	proto "github.com/micro/go-os/discovery/proto"
+	proto "github.com/kennyzhu/go-os/discovery/proto"
 )
 
 func rr(addrs []string) func() []string {

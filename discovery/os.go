@@ -1,3 +1,4 @@
+// 通用的注册管理,包括自定义的心跳检测......
 package discovery
 
 import (
@@ -7,9 +8,8 @@ import (
 	"github.com/micro/go-micro/client"
 	"github.com/micro/go-micro/registry"
 
-	proto2 "github.com/micro/discovery-srv/proto/registry"
-	proto "github.com/micro/go-os/discovery/proto"
 	"golang.org/x/net/context"
+	"github.com/kennyzhu/go-os/log"
 )
 
 type os struct {
@@ -20,11 +20,12 @@ type os struct {
 	next    func() []string
 
 	sync.RWMutex
-	heartbeats map[string]*proto.Heartbeat
+	bHeart  bool
+	heartbeats map[string] *Heartbeat
 	cache      map[string][]*registry.Service
 }
 
-func newOS(opts ...registry.Option) Discovery {
+func newOS(openHeart bool, opts ...registry.Option) Discovery {
 	options := registry.Options{
 		Context: context.Background(),
 	}
@@ -35,12 +36,12 @@ func newOS(opts ...registry.Option) Discovery {
 
 	dopts := getOptions(options.Context)
 
-	// set default client
+	// set default client as rpc client for rpc call, eg: http.Client.
 	if dopts.Client == nil {
 		dopts.Client = client.DefaultClient
 	}
 
-	// set default intervale
+	// set default interval.
 	if dopts.Interval == time.Duration(0) {
 		dopts.Interval = time.Second * 30
 	}
@@ -50,21 +51,27 @@ func newOS(opts ...registry.Option) Discovery {
 		opts:       dopts,
 		next:       rr(options.Addrs),
 		exit:       make(chan bool),
-		heartbeats: make(map[string]*proto.Heartbeat),
-		cache:      make(map[string][]*registry.Service),
+		bHeart:     openHeart,
+		heartbeats: make(map[string]*Heartbeat),
+		cache:      make(map[string][]*registry.Service), // local cache?..
 	}
-
 	go o.run()
 	return o
 }
 
+// Send heartbeats as client every o.opts.Interval time for every register service.
+// eg: service := micro.NewService(
+// 	micro.Name("com.example.srv.foo"),
+// 	micro.RegisterTTL(time.Second*30),
+// 	micro.RegisterInterval(time.Second*15),
+// )
 func (o *os) heartbeat() {
 	t := time.NewTicker(o.opts.Interval)
 
 	for {
 		select {
 		case <-t.C:
-			var heartbeats []*proto.Heartbeat
+			var heartbeats [] *Heartbeat
 
 			o.RLock()
 			for _, hb := range o.heartbeats {
@@ -73,9 +80,14 @@ func (o *os) heartbeat() {
 			o.RUnlock()
 
 			for _, hb := range heartbeats {
-				hb.Timestamp = time.Now().Unix()
-				pub := o.opts.Client.NewPublication(HeartbeatTopic, hb)
-				o.opts.Client.Publish(context.TODO(), pub)
+				hb.timestamp = time.Now().Unix()
+
+				// pub := o.opts.Client.NewPublication(HeartbeatTopic, hb)
+				// o.opts.Client.Publish(context.TODO(), pub)
+				err := registry.Register( hb.service )
+				if err != nil {
+					log.Fatal("Heartbeats check failed!")
+				}
 			}
 		case <-o.exit:
 			return
@@ -83,6 +95,7 @@ func (o *os) heartbeat() {
 	}
 }
 
+// watch from registry CURD ops and store in cache..
 func (o *os) watch(ch chan *registry.Result) {
 	watch, err := o.Watch()
 	for {
@@ -248,8 +261,24 @@ func (o *os) Close() error {
 	return nil
 }
 
+// opts like TCPCheck , service  run ..
+// default, the watch is for all services
 func (o *os) Register(s *registry.Service, opts ...registry.RegisterOption) error {
 	var grr error
+
+	// add interval loop...
+	ttlOpts := registry.RegisterTTL( time.Duration((o.opts.Interval.Seconds()) * 1.25) )
+	opts = append(opts, ttlOpts)
+
+	// intvalOpts := micro.RegisterInterval( time.Duration(o.opts.Interval.Seconds()) )
+	// opts = append(opts, intvalOpts)
+
+	err := registry.Register(s, opts...)
+	if err != nil {
+		grr = err
+	}
+
+	/*
 	service := toProto(s)
 	req := o.opts.Client.NewRequest(
 		"go.micro.srv.discovery",
@@ -261,21 +290,22 @@ func (o *os) Register(s *registry.Service, opts ...registry.RegisterOption) erro
 
 	for _, addr := range o.next() {
 		rsp := &proto2.RegisterResponse{}
-		err := o.opts.Client.CallRemote(context.TODO(), addr, req, rsp)
+		err := o.opts.Client.Call(context.TODO(), addr, req, rsp)
 		if err != nil {
 			grr = err
 		}
-	}
+	}*/
 
 	// create a heartbeat for this service
+	service := toProto(s)
 	o.Lock()
-	hb := &proto.Heartbeat{
-		Id:       s.Nodes[0].Id,
-		Service:  service,
-		Interval: int64(o.opts.Interval.Seconds()),
-		Ttl:      int64((o.opts.Interval.Seconds()) * 1.25),
+	hb := &Heartbeat{
+		id:       s.Nodes[0].Id,
+		service:  service,
+		interval: int64(o.opts.Interval.Seconds()),
+		ttl:      int64((o.opts.Interval.Seconds()) * 1.25),
 	}
-	o.heartbeats[hb.Id] = hb
+	o.heartbeats[hb.id] = hb
 	o.Unlock()
 
 	return grr

@@ -47,18 +47,22 @@ func (s *examples) getPrefernces(ctx *gin.Context) {
 	})
 
 	if err != nil {
-		ctx.JSON(500, map[string]interface{}{
-			"message": err,
+		ctx.JSON(500, map[string]string{
+			"message": err.Error(),
 		})
+		log.Error(err)
 		return
 	}
 
 	prefersJson,_ := json.Marshal( response.Prefer )
-	b, _ := json.Marshal(map[string]string{
+	/*b, _ := json.Marshal(map[string]string{
+		"message": string(prefersJson[:]),
+	})*/
+	ctx.JSON(int(response.ResultCode), map[string]string{
 		"message": string(prefersJson[:]),
 	})
-	ctx.JSON(int(response.ResultCode), b)
-	log.Info(prefersJson)
+	log.Info("getPrefernces End:")
+	// log.Info(b)
 }
 
 func (s *examples) getPreferencesList(ctx *gin.Context) {
@@ -72,16 +76,21 @@ func (s *examples) getPreferencesList(ctx *gin.Context) {
 		Limit: int32(limit),
 	})
 	if err != nil {
-		ctx.JSON(500, map[string]interface{}{
-			"message": err,
+		ctx.JSON(500, map[string]string{
+			"message": err.Error(),
 		})
+		log.Error(err)
 		return
 	}
 
 	prefersJson,_ := json.Marshal( response.Prefers )
+	/*
 	b, _ := json.Marshal(map[string]string{
 		"message": string(prefersJson[:]),
+	})*/
+	ctx.JSON(int(response.ResultCode), map[string]string{
+		"message": string(prefersJson[:]),
 	})
-	ctx.JSON(int(response.ResultCode), b)
-	log.Info(prefersJson)
+	log.Info("getPreferencesList End:")
+	// log.Info(b)
 }

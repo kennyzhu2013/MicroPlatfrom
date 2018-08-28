@@ -8,8 +8,8 @@
 package main
 
 import (
-	. "github.com/kennyzhu/go-os/dbservice/api/iris/modules"
-	"github.com/kennyzhu/go-os/dbservice/api/conf"
+	. "github.com/kennyzhu/go-os/gateservice/iris/modules"
+	"github.com/kennyzhu/go-os/gateservice/conf"
 	"github.com/micro/go-micro/registry"
 	"github.com/pborman/uuid"
 	"os"
@@ -17,6 +17,7 @@ import (
 	"syscall"
 	"github.com/kataras/iris"
 	"fmt"
+	"strconv"
 )
 
 
@@ -47,7 +48,8 @@ func main() {
 	webservice.Init()*/
 
 	Init()
-	go Modules.App.Run( iris.Addr(":8400") )
+	address := conf.AppConf.IpAddress + ":" + strconv.Itoa( int(conf.AppConf.Port) )
+	go Modules.App.Run( iris.Addr( address ) ) // eg:":8400"
 	// Register modules and app.Run...
 	// All path processed by modules..
 	// service.Handle("/", Modules.App)

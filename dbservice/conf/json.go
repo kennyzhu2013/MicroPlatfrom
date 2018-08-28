@@ -11,9 +11,9 @@ import (
 	"time"
 )
 
-//struct define...
-//var cc = make(map[string]string) //cache map
-//OrmConf config as variable..
+// struct define...
+// var cc = make(map[string]string) //cache map
+// OrmConf config as variable..
 var OrmConf struct{
 	DriverName string `json:"DriverName"`
 	DataSource string `json:"DataSource"`
@@ -22,12 +22,12 @@ var OrmConf struct{
 	DebugLog   bool   `json:"DebugLog"`
 	IsProMode  bool   `json:"IsProMode"`
 
-	//cache
+	// cache
 	IsCached  			bool   `json:"UseCache"`
 	CacheTime time.Duration `json:"CacheDuration"`
 	CacheCount 			int `json:"CacheRecordCount"`
 
-	//if TableHashValue == 0, no table sharding..
+	// if TableHashValue == 0, no table sharding..
 	TableHashValue		int `json:"TableHashValue"`
 
 	//Todo:
@@ -39,17 +39,17 @@ var AppConf struct{
 	LogLevel int32 `json:"LogLevel"`
 	LogPath  string    `json:"LogPath"`
 
-	//srv set..
+	// srv set..
 	SrvName string     `json:"SrvName"`
 	VersionTag int     `json:"Version"`
 
-	//Todo:
+	// Todo:
 	SetId             	int `json:"GlobalSetId"`
 }
 
-//self init...
+// self init...
 func init() {
-	//read config
+	// read config
 	if err := config.Load(file.NewSource(
 		file.WithPath("./conf/dbserver.json"),
 	)); err != nil {
@@ -57,7 +57,7 @@ func init() {
 		return
 	}
 
-	//read OrmConf...
+	// read OrmConf...
 	if err := config.Get("database").Scan(&OrmConf); err != nil {
 		fmt.Println(err)
 		return
@@ -79,7 +79,7 @@ func init() {
 	if AppConf.LogPath == "" {
 		AppConf.LogPath = LogOutPutPath
 	}
-	//init logger..
+	// init logger..
 	log.InitLogger(
 		log.WithLevel( log.Level(AppConf.LogLevel) ),
 		log.WithFields(log.Fields{

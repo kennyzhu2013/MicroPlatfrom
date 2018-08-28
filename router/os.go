@@ -1,3 +1,4 @@
+// common route for subscribe and publish
 package router
 
 import (

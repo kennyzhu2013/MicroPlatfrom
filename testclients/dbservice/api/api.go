@@ -26,7 +26,8 @@ func main() {
 	}*/
 	// for http：" application/json"
 	// r, err := http.Post("http://localhost:8002/dbservice/Preferences/PreferenceList", "application/json", bytes.NewReader(req))
-	r, err := http.Get("http://localhost:8002/dbservice/Preferences/PreferenceList?limit=2&index=1")
+	// r, err := http.Get("http://localhost:8002/dbservice/Preferences/PreferenceList?limit=2&index=1")
+	r, err := http.Get("http://localhost:8004/Preferences/GetPreferencesList?limit=2&index=1") // for gin api...
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -39,9 +40,9 @@ func main() {
 		return
 	}
 
-	fmt.Println(b)
+	fmt.Printf("All body message: %v\n", b)
 	fmt.Println(r.StatusCode)
-	var body map[string]interface{}
+	var body map[string]string
 	if err := json.Unmarshal(b, &body); err != nil {
 		fmt.Println(err)
 		return
@@ -49,7 +50,7 @@ func main() {
 
 	fmt.Println(body["message"])
 	rsp := make([]example.Preference, 0)
-	if err := json.Unmarshal( []byte( body["message"].(string) ) , &rsp); err != nil {
+	if err := json.Unmarshal( []byte( body["message"] ) , &rsp); err != nil {
 		fmt.Println(err)
 		return
 	}

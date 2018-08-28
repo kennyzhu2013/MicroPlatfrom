@@ -6,6 +6,8 @@
     "ApiName": "go.micro.api.dbservice",
     "SrvName": "go.micro.srv.dbservice",
 
+    "IpAddress": "",
+    "Port": 8400,
     "AppCount": 2,
     "AppId": 1
   }

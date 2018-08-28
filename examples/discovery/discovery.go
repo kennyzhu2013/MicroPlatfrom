@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/micro/go-micro/cmd"
 	"github.com/micro/go-micro/registry"
-	"github.com/micro/go-os/discovery"
+	"github.com/kennyzhu/go-os/discovery"
 	"time"
 )
 

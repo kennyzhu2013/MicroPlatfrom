@@ -17,6 +17,7 @@ type Discovery interface {
 }
 
 func init() {
+	// os : registry name
 	cmd.DefaultRegistries["os"] = NewRegistry
 }
 

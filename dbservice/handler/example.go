@@ -12,6 +12,7 @@ import (
 type Example struct{}
 
 // Call is a single request handler called via client.Call or the generated client code
+// Preferences.GetPreference
 func (e *Example) GetPreference(ctx context.Context, req *example.PreferenceRequest, rsp *example.PreferenceResponse) error {
 	log.Infof("Received Example.GetPreference request,id %v", req.User)
 
@@ -27,7 +28,7 @@ func (e *Example) GetPreference(ctx context.Context, req *example.PreferenceRequ
 		rsp.ResultCode = 200
 	}
 
-	//protobuf中所有对象都是指针....
+	// protobuf中所有对象都是指针....
 	rsp.Prefer = new(example.Preference)
 	rsp.Prefer.User = int32(preferResult.User)
 	rsp.Prefer.Name = preferResult.Name
