@@ -21,12 +21,12 @@ type ModelFinder interface {
 	Object() interface{}
 }
 
-//Get object by primary key id
+// Get object by primary key id
 func GetById(id int64, obj interface{}) error {
-	//// 复合主键的获取方法..
-	//// has, errr := engine.Id(xorm.PK{1,2}).Get(user)..
-	//fmt.Printf("id:%d", id)
-	//fmt.Printf("obj type:%v", reflect.TypeOf(obj))
+	// 复合主键的获取方法..
+	// has, errr := engine.Id(xorm.PK{1,2}).Get(user)..
+	// fmt.Printf("id:%d", id)
+	// fmt.Printf("obj type:%v", reflect.TypeOf(obj))
 	has, err := orm.Id(id).Get(obj)
 	if err != nil {
 		return err
@@ -43,8 +43,8 @@ func IsExist(obj interface{}) bool {
 	return has
 }
 
-//find limit objects.
-//objs为slice的指针或Map指针，即为查询后返回的结果...
+// find limit objects.
+// objs为slice的指针或Map指针，即为查询后返回的结果...
 func Find(limit, start int, objs interface{}) error {
 	return orm.Limit(limit, start).Find(objs)
 }

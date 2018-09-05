@@ -13,7 +13,7 @@ import (
 	"strconv"
 )
 
-//TableHash name
+// TableHash name
 func tableNameHash(tableName string, suffixKey int64) string {
 	if conf.OrmConf.TableHashValue == 0 {
 		return tableName
