@@ -2,9 +2,8 @@ package log
 
 import (
 	"fmt"
-	"time"
-
 	"golang.org/x/net/context"
+	"time"
 )
 
 type os struct {
@@ -65,9 +64,9 @@ func (o *os) log(l Level, f Fields, m string) error {
 	}
 
 	e := &Event{
+		Timestamp: time.Now().UnixNano(),
 		Level:     l,
 		Fields:    fields,
-		Timestamp: time.Now().UnixNano(),
 		Message:   m,
 	}
 
