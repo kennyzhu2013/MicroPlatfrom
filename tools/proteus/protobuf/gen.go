@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 
 	"github.com/kennyzhu/go-os/tools/proteus/report"
+	"unicode"
 )
 
 // Generator is in charge of generating the .proto files and write them
@@ -62,13 +63,13 @@ func (g *Generator) GeneratorDb(pkg *Package) error {
 	// not support enum...
 	// one message for each ..
 	for _, msg := range pkg.Messages {
-
 		var buf bytes.Buffer
 
 		// fist line..
 		buf.WriteString(`syntax = "proto3";` + "\n")
 
 		// write package and import and Options go_package...
+		// share package options ,eg : same package name..
 		writePackageData(&buf, pkg)
 		if len(pkg.Options) > 0 {
 			writeOptions(&buf, pkg.Options, false)
@@ -77,26 +78,46 @@ func (g *Generator) GeneratorDb(pkg *Package) error {
 
 		// write message struct ...
 		// one message a file not  a package, call writeFileMessage...
-
 		writeMessage(&buf, msg)
 		buf.WriteRune('\n')
 
 		// what to do with enum?...
-
 		//  user-define enum not support or write in a file
 		/*
 			for _, enum := range pkg.Enums {
 				writeEnum(&buf, enum)
 				buf.WriteRune('\n')
 			}*/
+		filename := g.convertStNameToProFile(msg.Name)
+		err := g.writeFileMessage(filename, pkg.Path, buf.Bytes())
+		if err != nil {
+			return err
+		}
+	}
 
-		if len(pkg.RPCs) > 0 {
-			writeService(&buf, pkg)
+	// write rpc service to a single file...
+	if len(pkg.RPCs) > 0 {
+		var buf bytes.Buffer
+		// fist line..
+		buf.WriteString(`syntax = "proto3";` + "\n")
+
+		// write package and import and Options go_package...
+		// share package options ,eg : same package name..
+		writePackageData(&buf, pkg)
+		if len(pkg.Options) > 0 {
+			writeOptions(&buf, pkg.Options, false)
+			buf.WriteRune('\n')
 		}
 
+		writeService(&buf, pkg)
+		err := g.writeFileMessage("generator_rpc.proto", pkg.Path, buf.Bytes())
+
+		if err != nil {
+			return err
+		}
 	}
-	//
-	return g.writeFile(pkg.Path, buf.Bytes())
+
+	return nil
 }
 
 // generate file for one message
@@ -123,7 +144,25 @@ func (g *Generator) writeFileMessage(structName string, path string, data []byte
 // to convert struct to st name.proto...
 // eg: TActionGrowthConfig to t_action_growth_config.proto
 func (g *Generator) convertStNameToProFile(structName string) string {
+	var strResult bytes.Buffer
+	upperBefore := false
+	for _,v := range structName {
+		if ( unicode.IsUpper( v ) ) {
+			if upperBefore {
+				strResult.WriteByte( '_')
+				upperBefore = false
+			}
+			strResult.WriteRune( unicode.ToLower( v ) )
+			upperBefore = true
+		} else  {
+			strResult.WriteRune( v )
+			upperBefore = false
+			// strResult +=
+		}
+	}
 
+	strResult.WriteString( ".proto")
+	return strResult.String()
 }
 
 func (g *Generator) writeFile(path string, data []byte) error {

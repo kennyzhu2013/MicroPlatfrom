@@ -117,6 +117,7 @@ func genAll(c *cli.Context) error {
 	if err != nil {
 		return fmt.Errorf("protoc is not installed: %s", err)
 	}
+	protocPath = protocPath
 
 	if err := checkFolder(protobufSrc); err != nil {
 		return fmt.Errorf("github.com/gogo/protobuf is not installed")
@@ -126,7 +127,11 @@ func genAll(c *cli.Context) error {
 		return err
 	}
 
-	// for file...
+	//
+
+	// for files, to protoc...
+	// Todo: micro create : protoc --proto_path=$GOPATH/src:. --micro_out=. --go_out=. greeter.proto
+	/*
 	for _, p := range packages {
 		outPath := goSrc
 		proto := filepath.Join(path, p, "generated.proto") // -f path + packagename + "generated.proto"
@@ -144,8 +149,11 @@ func genAll(c *cli.Context) error {
 		for _, s := range matches {
 			mv(s, moveToDir)
 		}
-	}
+	}*/
 
+	// json gateway...
+
+	// grpc server ...
 	return genRPCServer(c)
 }
 

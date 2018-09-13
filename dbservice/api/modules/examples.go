@@ -51,7 +51,7 @@ func (s *examples) Preference(ctx context.Context, req *api.Request, rsp *api.Re
 	return nil
 }
 
-//process all message: Say/PreferenceList?....
+// process all message: Say/PreferenceList?....
 func (s *examples) PreferenceList(ctx context.Context, req *api.Request, rsp *api.Response) error {
 	log.Info("Received PreferenceList API request")
 
