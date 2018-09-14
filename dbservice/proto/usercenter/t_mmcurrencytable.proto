@@ -1,0 +1,15 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TMmcurrencyTable {
+	string seq = 1;
+	string msisdn = 2;
+	string value = 3;
+	string status = 4;
+	google.protobuf.Timestamp gettime = 5;
+}
+

@@ -1,0 +1,18 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TMemberActionLimit {
+	string mobile = 1;
+	string access_date = 2;
+	string svc_type = 3;
+	string access_seq = 4;
+	string sign_date = 5;
+	string action_type = 6;
+	google.protobuf.Timestamp create_date = 7;
+	string partition_id = 8;
+}
+

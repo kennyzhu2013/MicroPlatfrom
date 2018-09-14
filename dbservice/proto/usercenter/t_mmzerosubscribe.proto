@@ -1,0 +1,13 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TMmZeroSubscribe {
+	string mobile = 1;
+	string pay_code = 2;
+	string rights_id = 3;
+}
+

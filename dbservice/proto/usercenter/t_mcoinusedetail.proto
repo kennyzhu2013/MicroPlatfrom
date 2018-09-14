@@ -1,0 +1,15 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TMcoinusedetail {
+	string seq = 1;
+	string getseq = 2;
+	string useseq = 3;
+	string value = 4;
+	string mcoin = 5;
+}
+

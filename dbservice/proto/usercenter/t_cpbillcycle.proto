@@ -1,0 +1,17 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TCpBillCycle {
+	string useridtype = 1;
+	string userid = 2;
+	string opertime = 3;
+	string cur_billcycle_starttime = 4;
+	string cur_billcycle_endtime = 5;
+	string next_billcycle_endtime = 6;
+	string in_use = 7;
+}
+

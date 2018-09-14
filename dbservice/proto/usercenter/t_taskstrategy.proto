@@ -1,0 +1,13 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TTaskStrategy {
+	string id = 1;
+	string interval = 2;
+	string unit = 3;
+}
+

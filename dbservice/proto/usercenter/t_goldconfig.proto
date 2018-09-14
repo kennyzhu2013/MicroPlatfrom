@@ -1,0 +1,13 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TGoldConfig {
+	string circle = 1;
+	string limit_count = 2;
+	string descs = 3;
+}
+

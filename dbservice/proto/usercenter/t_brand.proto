@@ -1,0 +1,26 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TBrand {
+	string msisdn = 1;
+	string deviceid = 2;
+	string brand = 3;
+	string district = 4;
+	string music = 5;
+	string read = 6;
+	string news = 7;
+	string weather = 8;
+	string video = 9;
+	string app = 10;
+	string email = 11;
+	string sns = 12;
+	string foreign = 13;
+	string student = 14;
+	string business = 15;
+	string partitionid = 16;
+}
+

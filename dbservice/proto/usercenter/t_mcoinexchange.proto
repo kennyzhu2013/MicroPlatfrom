@@ -1,0 +1,28 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TMcoinExchange {
+	string id = 1;
+	string mobile = 2;
+	string award_type_id = 3;
+	string person_limit_seq = 4;
+	string exchange_date = 5;
+	string day_limit_seq = 6;
+	string goods_name = 7;
+	string goods_type = 8;
+	string exchange_num = 9;
+	string equal_mcoin = 10;
+	string equal_score = 11;
+	google.protobuf.Timestamp create_date = 12;
+	string descs = 13;
+	string partition_id = 14;
+	string prop_code = 15;
+	string union_price = 16;
+	string exchange_type = 17;
+	string channel = 18;
+}
+

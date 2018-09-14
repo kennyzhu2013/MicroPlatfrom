@@ -1,0 +1,21 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TMedalConfig {
+	string id = 1;
+	string name = 2;
+	string condition_type = 3;
+	string limit_count = 4;
+	string month_award_days = 5;
+	string month_award_pool_id = 6;
+	string logo_url = 7;
+	string descs = 8;
+	google.protobuf.Timestamp create_date = 9;
+	string create_user = 10;
+	google.protobuf.Timestamp lupddate = 11;
+}
+

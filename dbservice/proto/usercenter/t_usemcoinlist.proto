@@ -1,0 +1,17 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TUsemcoinlist {
+	string seq = 1;
+	string msisdn = 2;
+	google.protobuf.Timestamp usedate = 3;
+	string usetype = 4;
+	string value = 5;
+	string descr = 6;
+	string mcoin = 7;
+}
+

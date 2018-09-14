@@ -1,0 +1,14 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TTesst01 {
+	string msgtype = 1;
+	string description = 2;
+	string content = 3;
+	string status = 4;
+}
+

@@ -1,0 +1,13 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TMemberDegradeTemp {
+	string mobile = 1;
+	string pre_grade = 2;
+	google.protobuf.Timestamp create_date = 3;
+}
+

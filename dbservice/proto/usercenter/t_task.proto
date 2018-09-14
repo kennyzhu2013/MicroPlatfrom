@@ -1,0 +1,28 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TTask {
+	string id = 1;
+	string requrl = 2;
+	string type = 3;
+	string status = 4;
+	google.protobuf.Timestamp excutedate = 5;
+	google.protobuf.Timestamp createdate = 6;
+	string retrycount = 7;
+	string priority = 8;
+	string reqbody = 9;
+	google.protobuf.Timestamp lupddate = 10;
+	string lastresult = 11;
+	string callid = 12;
+	string localpath = 13;
+	string contenttype = 14;
+	string timeout = 15;
+	string rspcontent = 16;
+	string taskdesc = 17;
+	string ssl = 18;
+}
+

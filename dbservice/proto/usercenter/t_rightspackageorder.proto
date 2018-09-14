@@ -1,0 +1,28 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TRightsPackageOrder {
+	string id = 1;
+	string mobile = 2;
+	google.protobuf.Timestamp order_date = 3;
+	string type = 4;
+	string order_num = 5;
+	string transaction_id = 6;
+	google.protobuf.Timestamp lock_date = 7;
+	google.protobuf.Timestamp confirm_date = 8;
+	string status = 9;
+	google.protobuf.Timestamp expire_date = 10;
+	string exchange_num = 11;
+	string partition_id = 12;
+	google.protobuf.Timestamp create_date = 13;
+	string msisdn = 14;
+	string feemsisdn = 15;
+	string pay_code = 16;
+	string subs_seq = 17;
+	string channel_id = 18;
+}
+

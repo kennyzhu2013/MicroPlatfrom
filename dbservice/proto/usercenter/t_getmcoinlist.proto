@@ -1,0 +1,20 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TGetmcoinlist {
+	string seq = 1;
+	string msisdn = 2;
+	google.protobuf.Timestamp getdate = 3;
+	google.protobuf.Timestamp expiredate = 4;
+	string status = 5;
+	string value = 6;
+	string balance = 7;
+	string descr = 8;
+	string mcoin = 9;
+	string mcoinbalance = 10;
+}
+

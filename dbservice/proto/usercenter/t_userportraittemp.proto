@@ -1,0 +1,22 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TUserPortraitTemp {
+	string mobile = 1;
+	string lable_id1 = 2;
+	string lable_name1 = 3;
+	string lable_id2 = 4;
+	string lable_name2 = 5;
+	string lable_id3 = 6;
+	string lable_name3 = 7;
+	string lable_id4 = 8;
+	string lable_name4 = 9;
+	google.protobuf.Timestamp register_date = 10;
+	google.protobuf.Timestamp create_date = 11;
+	string partition_id = 12;
+}
+

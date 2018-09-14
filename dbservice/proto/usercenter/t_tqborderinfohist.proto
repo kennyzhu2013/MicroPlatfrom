@@ -1,0 +1,34 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TTqbOrderinfoHist {
+	string histid = 1;
+	string orderid = 2;
+	string checkid = 3;
+	string tradeid = 4;
+	string subsid = 5;
+	string chargesubsid = 6;
+	string ordertype = 7;
+	string orderpayment = 8;
+	string appid = 9;
+	string paycode = 10;
+	string programid = 11;
+	string orderstatus = 12;
+	google.protobuf.Timestamp startdate = 13;
+	google.protobuf.Timestamp lastchgdate = 14;
+	string subnplace = 15;
+	google.protobuf.Timestamp lastsendmcoinmonth = 16;
+	string price = 17;
+	string subsreq = 18;
+	string md5sign = 19;
+	string exdata = 20;
+	string returnstatus = 21;
+	string provinceid = 22;
+	string channelid = 23;
+	google.protobuf.Timestamp inserttime = 24;
+}
+

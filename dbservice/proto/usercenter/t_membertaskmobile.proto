@@ -1,0 +1,17 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TMemberTaskMobile {
+	string task_id = 1;
+	string mobile = 2;
+	string vip_grade = 3;
+	string valid_days = 4;
+	string status = 5;
+	google.protobuf.Timestamp create_date = 6;
+	google.protobuf.Timestamp lupddate = 7;
+}
+

@@ -1,0 +1,19 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TScoreExchange {
+	string id = 1;
+	string mobile = 2;
+	string score_num = 3;
+	string mcoin_num = 4;
+	google.protobuf.Timestamp create_date = 5;
+	string descs = 6;
+	string goods_id = 7;
+	string goods_num = 8;
+	string partition_id = 9;
+}
+

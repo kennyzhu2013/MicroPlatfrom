@@ -1,0 +1,13 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TMemberVitalityExpireTemp {
+	string mobile = 1;
+	string total = 2;
+	string grade_id = 3;
+}
+

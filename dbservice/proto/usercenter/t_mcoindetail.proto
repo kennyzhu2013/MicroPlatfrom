@@ -1,0 +1,23 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TMcoinDetail {
+	string id = 1;
+	string mobile = 2;
+	string action = 3;
+	string action_name = 4;
+	string mcoin_num = 5;
+	string action_date = 6;
+	google.protobuf.Timestamp create_date = 7;
+	string descs = 8;
+	string partition_id = 9;
+	string source = 10;
+	string activity_id = 11;
+	string field1 = 12;
+	string field2 = 13;
+}
+

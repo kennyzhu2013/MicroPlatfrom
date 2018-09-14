@@ -1,0 +1,31 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TFlowOrderDs {
+	string order_id = 1;
+	string mcoin_exchange_id = 2;
+	string mobile = 3;
+	string partition_id = 4;
+	string exchange_good_id = 5;
+	string product_code = 6;
+	string plat_id = 7;
+	string cmd_flag = 8;
+	string timestamp = 9;
+	string flx_type = 10;
+	string nonce = 11;
+	string signature = 12;
+	string status = 13;
+	string ret_code = 14;
+	string ret_msg = 15;
+	string client_order_id = 16;
+	string notify_msg = 17;
+	string notify_code = 18;
+	google.protobuf.Timestamp notify_date = 19;
+	google.protobuf.Timestamp create_date = 20;
+	google.protobuf.Timestamp lupd_date = 21;
+}
+

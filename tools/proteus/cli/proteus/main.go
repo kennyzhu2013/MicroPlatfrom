@@ -129,9 +129,9 @@ func genAll(c *cli.Context) error {
 
 	//
 
-	// for files, to protoc...
+	// for files, to proto c...
 	// Todo: micro create : protoc --proto_path=$GOPATH/src:. --micro_out=. --go_out=. greeter.proto
-	/*
+	// or go-kit -- proto file to generate
 	for _, p := range packages {
 		outPath := goSrc
 		proto := filepath.Join(path, p, "generated.proto") // -f path + packagename + "generated.proto"
@@ -149,14 +149,15 @@ func genAll(c *cli.Context) error {
 		for _, s := range matches {
 			mv(s, moveToDir)
 		}
-	}*/
+	}
 
-	// json gateway...
+	// generator json gateway for gin...
 
-	// grpc server ...
+	// generate grpc server handler for micro  ...
 	return genRPCServer(c)
 }
 
+// create fast pb.go,,
 func protocExec(protocPath, pkg, outPath, protoFile string) error {
 	protocArgs := fmt.Sprintf(
 		"--proto_path=%s:%s:%s:%s:.",
@@ -196,6 +197,7 @@ func genAllGoFastOutOption(outPath string) string {
 		str += fmt.Sprintf(",%s", importMappings)
 	}
 
+	// output path..
 	str += fmt.Sprintf(":%s", outPath)
 
 	return str

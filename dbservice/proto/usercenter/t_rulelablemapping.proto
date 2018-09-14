@@ -1,0 +1,21 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TRuleLableMapping {
+	string id = 1;
+	string condition_id = 2;
+	string lable_id1 = 3;
+	string lable_name1 = 4;
+	string lable_id2 = 5;
+	string lable_name2 = 6;
+	string lable_id3 = 7;
+	string lable_name3 = 8;
+	string lable_id4 = 9;
+	string lable_name4 = 10;
+	google.protobuf.Timestamp create_date = 11;
+}
+

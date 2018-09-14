@@ -1,0 +1,17 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TMessageType {
+	string id = 1;
+	string name = 2;
+	string code = 3;
+	string type = 4;
+	string access_num = 5;
+	google.protobuf.Timestamp create_date = 6;
+	string status = 7;
+}
+

@@ -1,0 +1,24 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TMcouponsinfoHis {
+	string recordseq = 1;
+	string msisdn = 2;
+	string mcouponsvalue = 3;
+	string modtype = 4;
+	google.protobuf.Timestamp actiontime = 5;
+	string gifttype = 6;
+	string appname = 7;
+	string orderid = 8;
+	string appid = 9;
+	string description = 10;
+	google.protobuf.Timestamp updatetime = 11;
+	string batch_id = 12;
+	string user_id = 13;
+	string is_batch = 14;
+}
+

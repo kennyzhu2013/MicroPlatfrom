@@ -1,0 +1,15 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TMemberScoreReset {
+	string operate_date = 1;
+	string mobile = 2;
+	string score_num = 3;
+	string descs = 4;
+	string partition_id = 5;
+}
+

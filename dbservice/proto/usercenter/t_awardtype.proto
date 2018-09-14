@@ -1,0 +1,30 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TAwardType {
+	string typeid = 1;
+	string award_pool_id = 2;
+	string grade = 3;
+	string grade_name = 4;
+	string type = 5;
+	string name = 6;
+	string price = 7;
+	string count = 8;
+	string rate = 9;
+	string rate1 = 10;
+	string descs = 11;
+	google.protobuf.Timestamp create_date = 12;
+	google.protobuf.Timestamp lupddate = 13;
+	string del_flag = 14;
+	string award_limit_count = 15;
+	string image_url = 16;
+	string throw_way = 17;
+	string ext_field1 = 18;
+	string ext_field2 = 19;
+	string ext_field3 = 20;
+}
+

@@ -1,0 +1,16 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TOperateLog {
+	string operateid = 1;
+	string operatedesc = 2;
+	string operateresult = 3;
+	string successcounts = 4;
+	google.protobuf.Timestamp operatetime = 5;
+	string lasttime = 6;
+}
+

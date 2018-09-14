@@ -1,0 +1,26 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TUserGrade {
+	string msisdn = 1;
+	string usergrade = 2;
+	string vipstatus = 3;
+	string viptype = 4;
+	google.protobuf.Timestamp vipstartdate = 5;
+	google.protobuf.Timestamp vipenddate = 6;
+	google.protobuf.Timestamp changetime = 7;
+	string partitionid = 8;
+	string gradedesc = 9;
+	string status1 = 10;
+	string status2 = 11;
+	google.protobuf.Timestamp validtime1 = 12;
+	google.protobuf.Timestamp validtime2 = 13;
+	string mbiquto = 14;
+	google.protobuf.Timestamp unsubsixtime = 15;
+	string mcoin = 16;
+}
+

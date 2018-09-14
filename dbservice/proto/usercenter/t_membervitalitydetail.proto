@@ -1,0 +1,20 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TMemberVitalityDetail {
+	string id = 1;
+	string mobile = 2;
+	string action_type = 3;
+	string incr_num = 4;
+	string total = 5;
+	string source = 6;
+	google.protobuf.Timestamp create_date = 7;
+	google.protobuf.Timestamp expire_date = 8;
+	string status = 9;
+	string partition_id = 10;
+}
+

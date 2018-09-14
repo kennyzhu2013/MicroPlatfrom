@@ -1,0 +1,19 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TGradehistory {
+	string recordseq = 1;
+	string msisdn = 2;
+	string usergrade = 3;
+	string vipstatus = 4;
+	string viptype = 5;
+	google.protobuf.Timestamp vipstartdate = 6;
+	google.protobuf.Timestamp vipenddate = 7;
+	string grade_desc = 8;
+	google.protobuf.Timestamp inserttime = 9;
+}
+

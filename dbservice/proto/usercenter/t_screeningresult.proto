@@ -1,0 +1,16 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TScreeningResult {
+	string model_id = 1;
+	google.protobuf.Timestamp create_date = 2;
+	string user_num = 3;
+	string status = 4;
+	string local_file_path = 5;
+	string cdn_url = 6;
+}
+

@@ -1,0 +1,24 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TMemberSignConfig {
+	string action_score_id = 1;
+	string member_grade = 2;
+	string first_day_point = 3;
+	string second_day_point = 4;
+	string third_day_point = 5;
+	string fourth_day_point = 6;
+	string fifth_day_point = 7;
+	string six_day_point = 8;
+	string seventh_day_chance1 = 9;
+	string seventh_day_point1 = 10;
+	string seventh_day_chance2 = 11;
+	string seventh_day_point2 = 12;
+	string seventh_day_chance3 = 13;
+	string seventh_day_point3 = 14;
+}
+

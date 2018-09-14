@@ -1,0 +1,57 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TUserInfo {
+	string userid = 1;
+	string puserid = 2;
+	string loginname = 3;
+	string usertype = 4;
+	string imsi = 5;
+	string bindmsisdn = 6;
+	string password = 7;
+	string errortimes = 8;
+	google.protobuf.Timestamp locktime = 9;
+	string nickname = 10;
+	string email = 11;
+	string headimage = 12;
+	string sex = 13;
+	string birthday = 14;
+	string constellation = 15;
+	string work = 16;
+	string introduce = 17;
+	string favorite = 18;
+	string provinceid = 19;
+	string cityid = 20;
+	string address = 21;
+	google.protobuf.Timestamp regtime = 22;
+	string regplace = 23;
+	google.protobuf.Timestamp lastlogontime = 24;
+	string lastlogonplace = 25;
+	google.protobuf.Timestamp ludtime = 26;
+	string ludplace = 27;
+	string wwwfirlogoncid = 28;
+	google.protobuf.Timestamp wwwfirlogontime = 29;
+	string wwwdeviceid = 30;
+	string mofirlogoncid = 31;
+	google.protobuf.Timestamp mofirlogontime = 32;
+	string modeviceid = 33;
+	string wapfirlogoncid = 34;
+	google.protobuf.Timestamp wapfirlogontime = 35;
+	string wapdeviceid = 36;
+	string paypassword = 37;
+	string paypasswordstatus = 38;
+	string partitionid = 39;
+	string blogstat_otn = 40;
+	string bloguid_otn = 41;
+	string follow_ap = 42;
+	string payswitchstatus = 43;
+	string fetionno = 44;
+	string fetiontype = 45;
+	string personalsign = 46;
+	string privacyset = 47;
+}
+

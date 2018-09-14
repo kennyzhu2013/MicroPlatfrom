@@ -1,0 +1,16 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TIpFilter {
+	string id = 1;
+	string ip = 2;
+	string type = 3;
+	google.protobuf.Timestamp createdate = 4;
+	google.protobuf.Timestamp lupddate = 5;
+	string descs = 6;
+}
+

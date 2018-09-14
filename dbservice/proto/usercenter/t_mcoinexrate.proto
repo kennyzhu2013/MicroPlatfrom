@@ -1,0 +1,21 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TMcoinExrate {
+	string id = 1;
+	string member_grade = 2;
+	string score_num = 3;
+	string mcoin_num = 4;
+	string day_limit = 5;
+	string person_limit = 6;
+	string current_mcoin_num = 7;
+	string exchanged_mcoin_num = 8;
+	google.protobuf.Timestamp create_date = 9;
+	string create_user = 10;
+	google.protobuf.Timestamp lupddate = 11;
+}
+

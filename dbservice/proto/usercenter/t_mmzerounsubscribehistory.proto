@@ -1,0 +1,21 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TMmZeroUnsubscribeHistory {
+	string order_num = 1;
+	string mobile = 2;
+	google.protobuf.Timestamp create_date = 3;
+	string status = 4;
+	google.protobuf.Timestamp req_cssp_date = 5;
+	google.protobuf.Timestamp call_back_date = 6;
+	string transaction_id = 7;
+	string rights_id = 8;
+	string rights_type = 9;
+	string pay_code = 10;
+	string partition_id = 11;
+}
+

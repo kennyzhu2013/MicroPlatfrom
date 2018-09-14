@@ -1,0 +1,18 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TServiceNode {
+	string nodeid = 1;
+	string testflag = 2;
+	string nodename = 3;
+	string nodeip = 4;
+	string nodeport = 5;
+	string nodeurl = 6;
+	string flow = 7;
+	string timeout = 8;
+}
+

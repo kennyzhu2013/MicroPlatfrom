@@ -75,7 +75,7 @@ func CastToBasicType(basic string) Decorators {
 				f.Options = make(Options)
 			}
 
-			// f.Options["(gogoproto.casttype)"] = NewStringValue(basic)
+			f.Options["(gogoproto.casttype)"] = NewStringValue(basic)
 		},
 	)
 }
@@ -156,8 +156,8 @@ var DefaultMappings = TypeMappings{
 				if f.Options == nil {
 					f.Options = make(Options)
 				}
-				// f.Options["(gogoproto.stdtime)"] = NewLiteralValue("true")
-				// f.Options["(gogoproto.nullable)"] = NewLiteralValue("false")
+				f.Options["(gogoproto.stdtime)"] = NewLiteralValue("true")
+				f.Options["(gogoproto.nullable)"] = NewLiteralValue("false")
 			},
 		),
 	},
@@ -171,14 +171,14 @@ var DefaultMappings = TypeMappings{
 				if f.Options == nil {
 					f.Options = make(Options)
 				}
-				// f.Options["(gogoproto.stdduration)"] = NewLiteralValue("true")
-				// f.Options["(gogoproto.nullable)"] = NewLiteralValue("false")
+				f.Options["(gogoproto.stdduration)"] = NewLiteralValue("true")
+				f.Options["(gogoproto.nullable)"] = NewLiteralValue("false")
 			},
 		),
 	},
 }
 
-// ToGoOutPath returns the set of import mappings for the --go_out family of options.
+// ToGoOutPath returns the set of import mappings for the --go_out family of options.eg:--go_out=.
 // For more info see src-d/proteus#41
 func (t TypeMappings) ToGoOutPath() string {
 	var strs []string

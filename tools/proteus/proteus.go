@@ -16,6 +16,8 @@ type Options struct {
 type generator func(*scanner.Package, *protobuf.Package) error
 
 // generate for rpc generator...
+// can't find import: "github.com/golang/protobuf/proto"
+// go get github.com/golang/protobuf/proto
 func transformToProtobuf(packages []string, generate generator) error {
 	scanner, err := scanner.New(packages...)
 	if err != nil {

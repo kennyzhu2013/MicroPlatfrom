@@ -1,0 +1,23 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TLable {
+	string id = 1;
+	string name = 2;
+	string update_frequency = 3;
+	string parent_id = 4;
+	string all_parent_id = 5;
+	string all_parent_name = 6;
+	string sort_id = 7;
+	string comments = 8;
+	string update_rule_description = 9;
+	string data_source = 10;
+	string update_type = 11;
+	google.protobuf.Timestamp lupddate = 12;
+	google.protobuf.Timestamp create_date = 13;
+}
+

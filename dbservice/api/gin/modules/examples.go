@@ -54,12 +54,13 @@ func (s *examples) getPrefernces(ctx *gin.Context) {
 		return
 	}
 
+	/*
 	prefersJson,_ := json.Marshal( response.Prefer )
-	/*b, _ := json.Marshal(map[string]string{
-		"message": string(prefersJson[:]),
-	})*/
 	ctx.JSON(int(response.ResultCode), map[string]string{
 		"message": string(prefersJson[:]),
+	})*/
+	ctx.JSON(int(response.ResultCode), gin.H{
+		"message": response.Prefer,
 	})
 	log.Info("getPrefernces End:")
 	// log.Info(b)

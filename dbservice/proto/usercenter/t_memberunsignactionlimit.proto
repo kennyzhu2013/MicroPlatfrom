@@ -1,0 +1,24 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TMemberUnsignActionLimit {
+	string mobile = 1;
+	string access_date = 2;
+	string svc_type = 3;
+	string access_seq = 4;
+	string sign_date = 5;
+	string action_type = 6;
+	google.protobuf.Timestamp create_date = 7;
+	string current_day = 8;
+	string current_week = 9;
+	string current_month = 10;
+	string current_day_seq = 11;
+	string current_week_seq = 12;
+	string current_month_seq = 13;
+	string partition_id = 14;
+}
+

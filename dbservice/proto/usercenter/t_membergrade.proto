@@ -1,0 +1,22 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TMemberGrade {
+	string id = 1;
+	string name = 2;
+	string min_vitality = 3;
+	string pid = 4;
+	string title_id = 5;
+	string max_vitality = 6;
+	string award_pool_id = 7;
+	string month_award_days = 8;
+	string month_award_pool_id = 9;
+	string descs = 10;
+	string logo_url = 11;
+	string grade_id = 12;
+}
+

@@ -1,0 +1,24 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TMmPayOrder {
+	string order_id = 1;
+	string trade_id = 2;
+	string mobile = 3;
+	string status = 4;
+	string del_flag = 5;
+	string goods_id = 6;
+	google.protobuf.Timestamp order_date = 7;
+	google.protobuf.Timestamp pay_date = 8;
+	string mcoin_num = 9;
+	string score_num = 10;
+	string pay_money = 11;
+	google.protobuf.Timestamp notify_date = 12;
+	string notify_result = 13;
+	string notify_msg = 14;
+}
+

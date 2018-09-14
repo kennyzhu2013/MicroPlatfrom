@@ -1,0 +1,15 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TMmTag {
+	string tagid = 1;
+	string tagtypeid = 2;
+	string tagname = 3;
+	string stagid = 4;
+	google.protobuf.Timestamp savetime = 5;
+}
+

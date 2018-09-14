@@ -1,0 +1,21 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TActionGrowthConfig {
+	string day_limit = 1;
+	string week_limit = 2;
+	string month_limit = 3;
+	string level1_value = 4;
+	string level2_value = 5;
+	string level3_value = 6;
+	string level4_value = 7;
+	string level5_value = 8;
+	string level6_value = 9;
+	string level7_value = 10;
+	string descs = 11;
+}
+

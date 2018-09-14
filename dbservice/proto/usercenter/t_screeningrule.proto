@@ -1,0 +1,16 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TScreeningRule {
+	string id = 1;
+	string model_id = 2;
+	string in_link = 3;
+	string next_link = 4;
+	string label_list = 5;
+	google.protobuf.Timestamp create_date = 6;
+}
+

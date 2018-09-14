@@ -1,0 +1,17 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TAwardPool {
+	string id = 1;
+	string name = 2;
+	string type = 3;
+	string award_mode = 4;
+	google.protobuf.Timestamp create_date = 5;
+	google.protobuf.Timestamp lupddate = 6;
+	string descs = 7;
+}
+

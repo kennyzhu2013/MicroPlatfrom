@@ -1,0 +1,13 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TIpAuthentication {
+	string message_type_id = 1;
+	string ip_source_id = 2;
+	google.protobuf.Timestamp create_date = 3;
+}
+

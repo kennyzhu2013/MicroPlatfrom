@@ -1,0 +1,15 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TSubsFetion {
+	string userid = 1;
+	string loginname = 2;
+	string usertype = 3;
+	string regstatus = 4;
+	google.protobuf.Timestamp createtime = 5;
+}
+

@@ -1,0 +1,15 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TActionVitalityConfig {
+	string action_score_id = 1;
+	string pt_member_score = 2;
+	string qt_member_score = 3;
+	string by_member_score = 4;
+	string hj_member_score = 5;
+}
+

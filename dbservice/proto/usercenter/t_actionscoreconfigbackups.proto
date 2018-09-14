@@ -1,0 +1,26 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TActionScoreConfigBackups {
+	string id = 1;
+	string name = 2;
+	string action_code = 3;
+	string type = 4;
+	string source = 5;
+	string cycle = 6;
+	string status = 7;
+	string remark = 8;
+	google.protobuf.Timestamp create_date = 9;
+	string create_user = 10;
+	google.protobuf.Timestamp lupddate = 11;
+	string logo_url = 12;
+	string day_limit = 13;
+	string week_limit = 14;
+	string month_limit = 15;
+	string limit_count = 16;
+}
+

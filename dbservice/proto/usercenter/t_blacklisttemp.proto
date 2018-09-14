@@ -1,0 +1,14 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TBlackListTemp {
+	string mobile = 1;
+	string action = 2;
+	google.protobuf.Timestamp create_date = 3;
+	string create_user = 4;
+}
+

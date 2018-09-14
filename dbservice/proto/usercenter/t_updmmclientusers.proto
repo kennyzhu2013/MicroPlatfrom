@@ -1,0 +1,13 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TUpdMmclientUsers {
+	string stat_time = 1;
+	string msisdn = 2;
+	string status = 3;
+}
+

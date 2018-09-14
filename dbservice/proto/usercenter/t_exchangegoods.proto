@@ -1,0 +1,40 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TExchangeGoods {
+	string id = 1;
+	string name = 2;
+	string goods_name = 3;
+	string type = 4;
+	string status = 5;
+	string total_num = 6;
+	string current_num = 7;
+	string day_current_num = 8;
+	string equal_score = 9;
+	string day_limit = 10;
+	string person_limit = 11;
+	string member_grade = 12;
+	string sort = 13;
+	string img_url = 14;
+	google.protobuf.Timestamp create_date = 15;
+	google.protobuf.Timestamp operate_date = 16;
+	string descs = 17;
+	string product_code = 18;
+	string vid = 19;
+	string warn_threshold = 20;
+	string link_url = 21;
+	google.protobuf.Timestamp expire_date = 22;
+	string content_id = 23;
+	string flow_product_type = 24;
+	google.protobuf.Timestamp valid_start_date = 25;
+	string equal_mcoin = 26;
+	string cycle = 27;
+	string person_day_limit = 28;
+	string person_week_limit = 29;
+	string person_month_limit = 30;
+}
+

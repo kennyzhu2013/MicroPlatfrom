@@ -1,0 +1,13 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TSrvSupportTagName {
+	string tagid = 1;
+	string tagname = 2;
+	string tagtypename = 3;
+}
+

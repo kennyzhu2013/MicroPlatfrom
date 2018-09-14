@@ -1,0 +1,14 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TCpBillCycleProcessStatus {
+	string id = 1;
+	string last_full_sync_date = 2;
+	string file_name_processing = 3;
+	string file_process_result = 4;
+}
+

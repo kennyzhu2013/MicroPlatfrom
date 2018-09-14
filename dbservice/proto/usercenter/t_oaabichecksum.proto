@@ -1,0 +1,16 @@
+syntax = "proto3";
+package usercenter;
+
+import "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto";
+
+option go_package = "models";
+
+message TOaAbiChecksum {
+	string temptoken = 1;
+	string authcode = 2;
+	string correlatorid = 3;
+	string appinstanceid = 4;
+	string redirecturl = 5;
+	string appid = 6;
+}
+
