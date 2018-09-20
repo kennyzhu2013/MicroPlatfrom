@@ -13,6 +13,12 @@ type Options struct {
 	Packages []string
 }
 
+// store every proto file names  for every package...
+// Todo:
+type PackageFiles struct {
+	Files map[string][]string // key = package name, value = files...
+}
+
 type generator func(*scanner.Package, *protobuf.Package) error
 
 // generate for rpc generator...

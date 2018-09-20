@@ -68,7 +68,7 @@ func (t *Transformer) Transform(p *scanner.Package) *Package {
 	pkg := &Package{
 		Name:    toProtobufPkg(p.Path),
 		Path:    p.Path,
-		Imports: []string{"github.com/gogo/protobuf/gogoproto/gogo.proto"}, // []string{},
+		Imports: []string{"github.com/gogo/protobuf/gogoproto/gogo.proto"},
 		Options: t.defaultOptionsForPackage(p),
 	}
 
@@ -188,16 +188,14 @@ func (t *Transformer) transformEnum(e *scanner.Enum) *Enum {
 			Docs:  v.Doc,
 			Name:  toUpperSnakeCase(v.Name),
 			Value: uint(i),
-			// ignore defined type..
-			/*Options: Options{
+			Options: Options{
 				"(gogoproto.enumvalue_customname)": NewStringValue(v.Name),
-			},*/
+			},
 		})
 	}
 	return enum
 }
 
-// Type will be transformed into an enum.
 func (t *Transformer) defaultOptionsForScannedEnum(e *scanner.Enum) (opts Options) {
 	opts = Options{
 		"(gogoproto.enumdecl)":            NewLiteralValue("false"),
@@ -208,7 +206,7 @@ func (t *Transformer) defaultOptionsForScannedEnum(e *scanner.Enum) (opts Option
 		opts["(gogoproto.goproto_enum_stringer)"] = NewLiteralValue("false")
 	}
 
-	return Options{}
+	return
 }
 
 func (t *Transformer) transformStruct(pkg *Package, s *scanner.Struct) *Message {
@@ -231,19 +229,17 @@ func (t *Transformer) transformStruct(pkg *Package, s *scanner.Struct) *Message 
 	return msg
 }
 
-// refer :http://www.mamicode.com/info-detail-517548.html
 func (t *Transformer) defaultOptionsForScannedMessage(s *scanner.Struct) (opts Options) {
-		opts = Options{
-			"(gogoproto.typedecl)":        NewLiteralValue("false"),
-			"(gogoproto.goproto_getters)": NewLiteralValue("false"), // get for every field..
-		}
+	opts = Options{
+		"(gogoproto.typedecl)":        NewLiteralValue("false"),
+		"(gogoproto.goproto_getters)": NewLiteralValue("false"),
+	}
 
-		if s.IsStringer {
-			// 当这个选项为false的时候，gogo不再为message对一个的struct生成String(),即不调用CompactTextString...
-			opts["(gogoproto.goproto_stringer)"] = NewLiteralValue("false")
-		}
+	if s.IsStringer {
+		opts["(gogoproto.goproto_stringer)"] = NewLiteralValue("false")
+	}
 
-	return Options{}
+	return
 }
 
 func (t *Transformer) transformField(pkg *Package, msg *Message, field *scanner.Field, pos int) *Field {
@@ -280,13 +276,11 @@ func (t *Transformer) transformField(pkg *Package, msg *Message, field *scanner.
 
 func (t *Transformer) defaultOptionsForStructField(field *scanner.Field) Options {
 	opts := make(Options)
-	//
 	if generator.CamelCase(toLowerSnakeCase(field.Name)) != field.Name {
 		opts["(gogoproto.customname)"] = NewStringValue(field.Name)
 	}
 
 	if t.needsNotNullableOption(field.Type) {
-		// value can be null ..
 		opts["(gogoproto.nullable)"] = NewLiteralValue("false")
 	}
 
@@ -358,10 +352,9 @@ func (t *Transformer) transformType(pkg *Package, typ scanner.Type, msg *Message
 		}
 
 		// Repeated types cannot use casttype :(
-		/*
-			if !ty.IsRepeated() {
-				field.Options["(gogoproto.casttype)"] = NewStringValue(castType(pkg, n.Type))
-			}*/
+		if !ty.IsRepeated() {
+			field.Options["(gogoproto.casttype)"] = NewStringValue(castType(pkg, n.Type))
+		}
 		return n
 	}
 
@@ -478,9 +471,9 @@ func toUpperSnakeCase(s string) string {
 
 func (t *Transformer) defaultOptionsForPackage(p *scanner.Package) Options {
 	return Options{
-		"go_package": NewStringValue(p.Name),
-		"(gogoproto.sizer_all)":      NewLiteralValue("false"), // message生成"func Size() int"...
-		"(gogoproto.protosizer_all)": NewLiteralValue("true"), // generator ProtoSize function...
+		"go_package":                 NewStringValue(p.Name),
+		"(gogoproto.sizer_all)":      NewLiteralValue("false"),
+		"(gogoproto.protosizer_all)": NewLiteralValue("true"),
 	}
 }
 

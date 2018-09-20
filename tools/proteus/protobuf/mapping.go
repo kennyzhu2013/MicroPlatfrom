@@ -149,7 +149,7 @@ var DefaultMappings = TypeMappings{
 	"time.Time": &ProtoType{
 		Name:     "Timestamp",
 		Package:  "google.protobuf",
-		Import:   "github.com/golang/protobuf/ptypes/timestamp/timestamp.proto",
+		Import:   "google/protobuf/timestamp.proto",
 		GoImport: "github.com/gogo/protobuf/types",
 		Decorators: NewDecorators(
 			func(p *Package, m *Message, f *Field) {
@@ -164,7 +164,7 @@ var DefaultMappings = TypeMappings{
 	"time.Duration": &ProtoType{
 		Name:     "Duration",
 		Package:  "google.protobuf",
-		Import:   "github.com/golang/protobuf/ptypes/duration/duration.proto",
+		Import:   "google/protobuf/duration.proto",
 		GoImport: "github.com/gogo/protobuf/types",
 		Decorators: NewDecorators(
 			func(p *Package, m *Message, f *Field) {
@@ -178,7 +178,7 @@ var DefaultMappings = TypeMappings{
 	},
 }
 
-// ToGoOutPath returns the set of import mappings for the --go_out family of options.eg:--go_out=.
+// ToGoOutPath returns the set of import mappings for the --go_out family of options.
 // For more info see src-d/proteus#41
 func (t TypeMappings) ToGoOutPath() string {
 	var strs []string

@@ -127,14 +127,13 @@ func genAll(c *cli.Context) error {
 		return err
 	}
 
-	//
-
 	// for files, to proto c...
 	// Todo: micro create : protoc --proto_path=$GOPATH/src:. --micro_out=. --go_out=. greeter.proto
 	// or go-kit -- proto file to generate
+	// here to generator pb.go
 	for _, p := range packages {
 		outPath := goSrc
-		proto := filepath.Join(path, p, "generated.proto") // -f path + packagename + "generated.proto"
+		proto := filepath.Join(path, p, "*.proto") // -f path + packagename + "generated.proto"
 
 		if err := protocExec(protocPath, p, outPath, proto); err != nil {
 			return fmt.Errorf("error generating Go files from %q: %s", proto, err)
@@ -151,9 +150,10 @@ func genAll(c *cli.Context) error {
 		}
 	}
 
-	// generator json gateway for gin...
+	// generator json gateway for gin using https://github.com/grpc-ecosystem/grpc-gateway...
+	// Todo: ...
 
-	// generate grpc server handler for micro  ...
+	// generate grpc server handler for micro, to modify  ...
 	return genRPCServer(c)
 }
 
@@ -167,8 +167,9 @@ func protocExec(protocPath, pkg, outPath, protoFile string) error {
 		filepath.Join(path, pkg),
 	)
 
-	report.Info("executing protoc: %s %s", protocPath, protocArgs)
+	report.Info("executing protoc: %s %s %s %s", protocPath, protocArgs, genAllGoFastOutOption(outPath), protoFile)
 
+	// 不能通配，为啥...
 	cmd := exec.Command(
 		protocPath,
 		protocArgs,
