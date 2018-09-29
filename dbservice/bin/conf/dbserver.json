@@ -15,5 +15,10 @@
 		"IsProMode": false,
 		"TableHashValue": 0,
 		"UseCache": false
+	},
+	"sqlmap": {
+		"MapLocation":"./sql/mysql",
+		"MapSuffix":".xml",
+		"FSWatcher": true
 	}
 }

@@ -7,7 +7,7 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/xormplus/xorm"
-	"github.com/go-xorm/core"
+	"github.com/xormplus/core"
 
 	//self library..
 	. "github.com/kennyzhu/go-os/dbservice/conf"
@@ -16,23 +16,24 @@ import (
 var (
 	ErrNotExist = errors.New("not exist")
 
-	//singleton instance..
+	// singleton instance..
     orm *xorm.Engine
 )
 
 func SyncAllTables() error {
-	//struct sync...
-	//if not define then create...
+	// struct sync...
+	// if not define then create...
 	/*err = orm.Sync2(new(Setting), new(Category), new(Post), new(Image),
 		new(User), new(FavoritePost), new(Follow), new(Topic), new(FollowTopic),
 		new(Page), new(Notification), new(Comment), new(Bulletin))
 	if err != nil {
 		panic(err)
 	}*/
+
 	return orm.Sync2(new(Preferences), )
 }
 
-//need test promode ..
+// need test pro-mode ..
 func Init(isProMode bool) {
 	var err error
 	orm, err = xorm.NewEngine(OrmConf.DriverName, OrmConf.DataSource)
@@ -53,20 +54,33 @@ func Init(isProMode bool) {
 		orm.Logger().SetLevel(core.LOG_INFO)
 	}
 
-
+	// for debug mode
 	if !isProMode {
 		orm.ShowSQL(true)
 
-		//simple log..
+		// simple log..
 		sqlWriter,_ := os.Create("./log/sql.log")
 		logger := xorm.NewSimpleLogger(sqlWriter)
 		logger.ShowSQL(true)
 		orm.SetLogger(logger)
 	}
 
+	// sql cache for orm query, results count.
 	if OrmConf.IsCached {
 		ormCache := xorm.NewLRUCacher2(xorm.NewMemoryStore(), OrmConf.CacheTime, OrmConf.CacheCount)
 		orm.SetDefaultCacher(ormCache)
+	}
+
+	// sql map for orm.
+	err = orm.RegisterSqlMap( xorm.Xml(SqlMap.XmlLocation, SqlMap.XmlSuffix) )
+	if err != nil {
+		panic(err)
+	}
+	if true == SqlMap.OpenWatcher {
+		err = orm.StartFSWatcher()
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	err = SyncAllTables()
@@ -75,6 +89,6 @@ func Init(isProMode bool) {
 	}
 
 	fmt.Println("Models Init successed...")
-	//orm set...
-	//social.SetORM(orm)
+	// orm set...
+	// social.SetORM(orm)
 }

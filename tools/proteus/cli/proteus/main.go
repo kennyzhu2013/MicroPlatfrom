@@ -62,6 +62,13 @@ func main() {
 			Action:      initCmd(genRPCServer),
 			Flags:       baseFlags,
 		},
+		{  // add http json api...
+			Name:        "http",
+			Description: "Generates the json implementation of the http server interface defined by your Go source code.",
+			Usage:       "Generates http server implementation",
+			Action:      initCmd(genHttpServer),
+			Flags:       baseFlags,
+		},
 	}
 	app.Action = initCmd(genAll)
 
@@ -107,6 +114,10 @@ func genRPCServer(c *cli.Context) error {
 	return proteus.GenerateRPCServer(packages)
 }
 
+func genHttpServer(c *cli.Context) error {
+	return nil
+}
+
 var (
 	goSrc       = filepath.Join(os.Getenv("GOPATH"), "src")
 	protobufSrc = filepath.Join(goSrc, "github.com", "gogo", "protobuf")
@@ -127,13 +138,15 @@ func genAll(c *cli.Context) error {
 		return err
 	}
 
-	// for files, to proto c...
-	// Todo: micro create : protoc --proto_path=$GOPATH/src:. --micro_out=. --go_out=. greeter.proto
+	// for files, to proto c...:generate pb.go and micro.go
+	// 或手动执行 : protoc --proto_path=$GOPATH/src:. --micro_out=. --go_out=. usercenter/t_*.proto
 	// or go-kit -- proto file to generate
-	// here to generator pb.go
+	// protoc --proto_path=$GOPATH/src::/opt/gopath/src/github.com/gogo/protobuf/protobuf:. --micro_out=. ./protos/gopkg.in/src-d/proteus.v1/example/generated.proto.
+	// here to generator pb.go, 已经成功执行....
+	// 注意: 同一个包里的公有结构无法引用，因此公有结构要单独在一个包里被应用....
 	for _, p := range packages {
 		outPath := goSrc
-		proto := filepath.Join(path, p, "*.proto") // -f path + packagename + "generated.proto"
+		proto := filepath.Join(path, p, "generated.proto") // -f path + packagename + "*.proto"
 
 		if err := protocExec(protocPath, p, outPath, proto); err != nil {
 			return fmt.Errorf("error generating Go files from %q: %s", proto, err)
@@ -152,8 +165,10 @@ func genAll(c *cli.Context) error {
 
 	// generator json gateway for gin using https://github.com/grpc-ecosystem/grpc-gateway...
 	// Todo: ...
+	genHttpServer(c)
 
 	// generate grpc server handler for micro, to modify  ...
+	// generate micro service example for micro...
 	return genRPCServer(c)
 }
 
@@ -167,14 +182,22 @@ func protocExec(protocPath, pkg, outPath, protoFile string) error {
 		filepath.Join(path, pkg),
 	)
 
-	report.Info("executing protoc: %s %s %s %s", protocPath, protocArgs, genAllGoFastOutOption(outPath), protoFile)
+	report.Info("executing protoc: %s %s %s %s %s", protocPath, protocArgs, genAllGoFastOutOption(outPath), genAllMicroOutOption(outPath), protoFile)
 
 	// 不能通配，为啥...
+	/*
 	cmd := exec.Command(
 		protocPath,
 		protocArgs,
 		genAllGoFastOutOption(outPath),
 		protoFile,
+	)*/
+
+	// 通配符问题...
+	commandLine := "`" + protocPath + " " + protocArgs + " " + genAllGoFastOutOption(outPath) + " " + genAllMicroOutOption(outPath) + " " + protoFile + "`"
+	cmd := exec.Command(
+		"/bin/bash", "-c",
+		commandLine,
 	)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -192,6 +215,20 @@ func mv(from, to string) error {
 
 func genAllGoFastOutOption(outPath string) string {
 	str := "--gofast_out=plugins=grpc"
+	importMappings := protobuf.DefaultMappings.ToGoOutPath()
+
+	if importMappings != "" {
+		str += fmt.Sprintf(",%s", importMappings)
+	}
+
+	// output path..
+	str += fmt.Sprintf(":%s", outPath)
+
+	return str
+}
+
+func genAllMicroOutOption(outPath string) string {
+	str := "--micro_out="
 	importMappings := protobuf.DefaultMappings.ToGoOutPath()
 
 	if importMappings != "" {

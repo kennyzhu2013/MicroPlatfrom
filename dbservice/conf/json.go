@@ -34,6 +34,14 @@ var OrmConf struct{
 	DatabaseHashValue 	int `json:"DbHashValue"`
 }
 
+var SqlMap struct{
+	OpenWatcher bool `json:"FSWatcher"`
+	XmlLocation string `json:"MapLocation"`
+	XmlSuffix string `json:"MapSuffix"`
+
+	// ?...stpl
+}
+
 var AppConf struct{
 	//logger..
 	LogLevel int32 `json:"LogLevel"`
@@ -69,6 +77,15 @@ func init() {
 	if OrmConf.IsCached == true {
 		if OrmConf.CacheTime == 0 { OrmConf.CacheTime = OrmCacheTime }
 		if OrmConf.CacheCount == 0 { OrmConf.CacheCount = OrmCacheCount }
+	}
+
+	// load all sql map
+	if err := config.Get("sqlmap").Scan(&SqlMap); err != nil {
+		fmt.Println(err)
+		return
+	}
+	if SqlMap.XmlSuffix == "" {
+		SqlMap.XmlSuffix = ".xml"
 	}
 
 	if err := config.Get("app").Scan(&AppConf); err != nil {

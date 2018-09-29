@@ -76,7 +76,8 @@ func createEnumTypeSet(pkgs []*scanner.Package) protobuf.TypeSet {
 func GenerateProtos(options Options) error {
 	g := protobuf.NewGenerator(options.BasePath)
 	return transformToProtobuf(options.Packages, func(_ *scanner.Package, pkg *protobuf.Package) error {
-		return g.GeneratorDb(pkg)
+		// return g.GeneratorDb(pkg)
+		return g.Generator( pkg )
 	})
 }
 
