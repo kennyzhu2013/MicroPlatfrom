@@ -1,0 +1,2 @@
+##refer /opt/gopath/src/example.
+protoc --proto_path=$GOPATH/src:$GOPATH/src/github.com/kennyzhu/go-os/dbservice/tools/example/protos:/opt/gopath/src/github.com/gogo/protobuf/protobuf:. --micro_out=. ./protos/github.com/kennyzhu/go-os/dbservice/tools/example/generated.proto

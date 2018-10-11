@@ -9,8 +9,9 @@ import (
 	"github.com/xormplus/xorm"
 	"github.com/xormplus/core"
 
-	//self library..
+	// self library..
 	. "github.com/kennyzhu/go-os/dbservice/conf"
+	"github.com/kennyzhu/go-os/dbservice/models/maps"
 )
 
 var (
@@ -20,6 +21,7 @@ var (
     orm *xorm.Engine
 )
 
+// tables synced..
 func SyncAllTables() error {
 	// struct sync...
 	// if not define then create...
@@ -29,7 +31,10 @@ func SyncAllTables() error {
 	if err != nil {
 		panic(err)
 	}*/
-
+	err := maps.SyncTables()
+	if err != nil {
+		return err
+	}
 	return orm.Sync2(new(Preferences), )
 }
 
@@ -83,6 +88,8 @@ func Init(isProMode bool) {
 		}
 	}
 
+	// init models and sync tables...
+	maps.Init( orm )
 	err = SyncAllTables()
 	if err != nil {
 		panic(err)

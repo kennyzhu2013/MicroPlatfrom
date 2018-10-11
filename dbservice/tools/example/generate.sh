@@ -1,0 +1,1 @@
+proteus -p github.com/kennyzhu/go-os/dbservice/tools/example -p github.com/kennyzhu/go-os/dbservice/tools/example/categories -f $GOPATH/src/github.com/kennyzhu/go-os/dbservice/tools/example/protos --verbose
