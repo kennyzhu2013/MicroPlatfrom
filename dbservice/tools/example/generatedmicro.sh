@@ -1,2 +1,2 @@
 ##refer /opt/gopath/src/example.
-protoc --proto_path=$GOPATH/src:$GOPATH/src/github.com/kennyzhu/go-os/dbservice/tools/example/protos:/opt/gopath/src/github.com/gogo/protobuf/protobuf:. --micro_out=. ./protos/github.com/kennyzhu/go-os/dbservice/tools/example/generated.proto
+protoc --proto_path=$GOPATH/src:/opt/gopath/src/github.com/gogo/protobuf/protobuf:. --micro_out=Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types,Mgoogle/protobuf/duration.proto=github.com/gogo/protobuf/types,Mgoogle/api/annotations.proto=github.com/gogo/googleapis/google/api:$GOPATH/src/ ./github.com/kennyzhu/go-os/dbservice/tools/example/generated.proto

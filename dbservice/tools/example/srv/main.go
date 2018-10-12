@@ -21,7 +21,7 @@ func main() {
 	service.Init()
 
 	// Register Handlers
-	example.RegisterExampleServiceHandler(service.Server(), example.NewSay())
+	example.RegisterExampleServiceHandler(service.Server(), example.NewExampleServiceServer())
 
 	// Run server
 	if err := service.Run(); err != nil {

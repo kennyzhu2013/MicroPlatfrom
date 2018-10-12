@@ -1,1 +1,2 @@
-proteus -p github.com/kennyzhu/go-os/dbservice/tools/example -p github.com/kennyzhu/go-os/dbservice/tools/example/categories -f $GOPATH/src/github.com/kennyzhu/go-os/dbservice/tools/example/protos --verbose
+proteus -p github.com/kennyzhu/go-os/dbservice/tools/example -p github.com/kennyzhu/go-os/dbservice/tools/example/categories -f $GOPATH/src/github.com/kennyzhu/go-os/dbservice/tools/example --verbose
+###sed -i.bak "s/import _ \"google\/protobuf\"/\/\/import _ \"google\/protobuf\"/g" generated.micro.go && rm generated.micro.go
