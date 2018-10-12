@@ -105,10 +105,12 @@ func (c *context) addImport(path string) {
 	c.imports = append(c.imports, path)
 }
 
+//
 func serviceImplName(pkg *protobuf.Package) string {
 	n := pkg.ServiceName()
 	return strings.ToLower(string(n[0])) + n[1:] + "Server"
 }
+
 
 func constructorName(pkg *protobuf.Package) string {
 	return fmt.Sprintf("New%sServer", pkg.ServiceName())

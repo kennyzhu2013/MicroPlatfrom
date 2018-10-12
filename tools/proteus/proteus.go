@@ -84,7 +84,8 @@ func GenerateProtos(options Options) error {
 // GenerateRPCServer generates the gRPC server implementation of the given
 // packages.
 func GenerateRPCServer(packages []string) error {
-	g := rpc.NewGenerator()
+	// g := rpc.NewGenerator()
+	g := rpc.NewMicroGenerator() // change to micro service ....
 	return transformToProtobuf(packages, func(p *scanner.Package, pkg *protobuf.Package) error {
 		return g.Generate(pkg, p.Path)
 	})

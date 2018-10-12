@@ -1,4 +1,12 @@
-package rpc // import "github.com/kennyzhu/go-os/tools/proteus/rpc"
+/*
+@Time : 2018/10/12 10:58 
+@Author : kenny zhu
+@File : micro_rpc.go
+@Software: GoLand
+@Others:
+*/
+package rpc
+
 
 import (
 	"fmt"
@@ -45,24 +53,25 @@ import (
 // A single file per package will be generated containing all the RPC methods.
 // The file will be written to the package path and it will be named
 // "server.proteus.go"
-type Generator struct {
+type MicroGenerator struct {
 	importer *parseutil.Importer
 }
 
 // NewGenerator creates a new Generator.
-func NewGenerator() *Generator {
-	return &Generator{parseutil.NewImporter()}
+func NewMicroGenerator() *MicroGenerator {
+	return &MicroGenerator{parseutil.NewImporter()}
 }
 
 // Generate creates a new file in the package at the given path and implements
 // the server according to the given proto package.
-// generate rpc service...
-func (g *Generator) Generate(proto *protobuf.Package, path string) error {
+// generate micro service...
+func (g *MicroGenerator) Generate(proto *protobuf.Package, path string) error {
 	if len(proto.RPCs) == 0 {
-		report.Warn("no RPCs in the given proto file, not generating anything")
+		report.Warn("no micro RPCs in the given proto file, not generating anything")
 		return nil
 	}
 
+	// insert import, exclude files..
 	pkg, err := g.importer.ImportWithFilters(
 		path,
 		parseutil.FileFilters{
@@ -72,12 +81,16 @@ func (g *Generator) Generate(proto *protobuf.Package, path string) error {
 			func(pkg, file string, typ parseutil.FileType) bool {
 				return !strings.HasSuffix(file, ".proteus.go")
 			},
+			func(pkg, file string, typ parseutil.FileType) bool {
+				return !strings.HasSuffix(file, ".micro.go")
+			},
 		},
 	)
 	if err != nil {
 		return err
 	}
 
+	// find context
 	ctx := &context{
 		implName:        serviceImplName(proto),
 		constructorName: constructorName(proto),
@@ -87,22 +100,25 @@ func (g *Generator) Generate(proto *protobuf.Package, path string) error {
 
 	var decls []ast.Decl
 	if !ctx.isNameDefined(ctx.implName) {
+		// type struct
 		decls = append(decls, g.declImplType(ctx.implName))
 	}
 
 	if !ctx.isNameDefined(ctx.constructorName) {
+		// constructor
 		report.Warn("constructor %s for service %s is not implemented", ctx.implName, ctx.constructorName)
 		decls = append(decls, g.declConstructor(ctx.implName, ctx.constructorName))
 	}
 
 	for _, rpc := range proto.RPCs {
+		// function
 		decls = append(decls, g.declMethod(ctx, rpc))
 	}
 
 	return g.writeFile(g.buildFile(ctx, decls), path)
 }
 
-func (g *Generator) declImplType(implName string) ast.Decl {
+func (g *MicroGenerator) declImplType(implName string) ast.Decl {
 	return &ast.GenDecl{
 		Tok: token.TYPE,
 		Specs: []ast.Spec{
@@ -116,7 +132,7 @@ func (g *Generator) declImplType(implName string) ast.Decl {
 	}
 }
 
-func (g *Generator) declConstructor(implName, constructorName string) ast.Decl {
+func (g *MicroGenerator) declConstructor(implName, constructorName string) ast.Decl {
 	return &ast.FuncDecl{
 		Name: ast.NewIdent(constructorName),
 		Type: &ast.FuncType{
@@ -142,7 +158,8 @@ func (g *Generator) declConstructor(implName, constructorName string) ast.Decl {
 	}
 }
 
-func (g *Generator) genMethodType(ctx *context, rpc *protobuf.RPC) *ast.FuncType {
+// create function type for micro..
+func (g *MicroGenerator) genMethodType(ctx *context, rpc *protobuf.RPC) *ast.FuncType {
 	var in, out string
 
 	if isGenerated(rpc.Input) {
@@ -157,19 +174,24 @@ func (g *Generator) genMethodType(ctx *context, rpc *protobuf.RPC) *ast.FuncType
 		out = ctx.returnType(rpc)
 	}
 
+	// func (s *Say) GetAlphaTime(ctx context.Context, in *GetAlphaTimeRequest, result *MyTime) error..
 	return &ast.FuncType{
 		Params: fields(
-			field("ctx", ast.NewIdent("xcontext.Context")),
+			field("ctx", ast.NewIdent("context.Context")),
 			field("in", ptr(ast.NewIdent(in))),
+
+			// add
+			field("result", ptr(ast.NewIdent(out))),
 		),
 		Results: fields(
-			field("result", ptr(ast.NewIdent(out))),
+			// field("result", ptr(ast.NewIdent(out))),
 			field("err", ast.NewIdent("error")),
 		),
 	}
 }
 
-func (g *Generator) genMethodCall(ctx *context, rpc *protobuf.RPC) ast.Expr {
+// function call part..
+func (g *MicroGenerator) genMethodCall(ctx *context, rpc *protobuf.RPC) ast.Expr {
 	call := &ast.CallExpr{Fun: ast.NewIdent(rpc.Method)}
 	if rpc.Recv != "" {
 		call.Fun = ast.NewIdent(fmt.Sprintf("s.%s.%s", rpc.Recv, rpc.Method))
@@ -202,17 +224,18 @@ func (g *Generator) genMethodCall(ctx *context, rpc *protobuf.RPC) ast.Expr {
 	return call
 }
 
-func (g *Generator) genBaseMethodBody(methodType *ast.FuncType) *ast.BlockStmt {
+// result = new(MyDuration), change to temp = new(MyDuration)
+func (g *MicroGenerator) genBaseMethodBody(methodType *ast.FuncType) *ast.BlockStmt {
 	return &ast.BlockStmt{
 		List: []ast.Stmt{
 			&ast.AssignStmt{
-				Tok: token.ASSIGN,
-				Lhs: []ast.Expr{ast.NewIdent("result")},
+				Tok: token.DEFINE,
+				Lhs: []ast.Expr{ast.NewIdent("tempResult")},
 				Rhs: []ast.Expr{
 					&ast.CallExpr{
 						Fun: ast.NewIdent("new"),
 						Args: []ast.Expr{
-							methodType.Results.List[0].Type.(*ast.StarExpr).X,
+							methodType.Params.List[2].Type.(*ast.StarExpr).X,
 						},
 					},
 				},
@@ -221,7 +244,23 @@ func (g *Generator) genBaseMethodBody(methodType *ast.FuncType) *ast.BlockStmt {
 	}
 }
 
-func (g *Generator) genMethodBody(ctx *context, rpc *protobuf.RPC, typ *ast.FuncType) *ast.BlockStmt {
+func (g *MicroGenerator) genResultOutputMethodBody(methodType *ast.FuncType) *ast.AssignStmt {
+	return &ast.AssignStmt{
+				Tok: token.ASSIGN,
+				// Lhs: []ast.Expr{ast.NewIdent("result")},
+				Lhs: []ast.Expr{ast.NewIdent("*result")},
+				Rhs: []ast.Expr{
+					&ast.UnaryExpr{
+						Op: token.MUL,
+						X:  ast.NewIdent("tempResult"),
+					},
+				},
+			}
+}
+
+// micro function body
+func (g *MicroGenerator) genMethodBody(ctx *context, rpc *protobuf.RPC, typ *ast.FuncType) *ast.BlockStmt {
+	// whether the named type was generated by proteus ..
 	if !isGenerated(rpc.Output) {
 		return g.genMethodBodyForNotGeneratedOutput(ctx, rpc, typ)
 	} else {
@@ -229,30 +268,21 @@ func (g *Generator) genMethodBody(ctx *context, rpc *protobuf.RPC, typ *ast.Func
 	}
 }
 
-func (g *Generator) genMethodBodyAssignmentsForGeneratedOutput(ctx *context, rpc *protobuf.RPC, msg *protobuf.Message) (lhs []ast.Expr) {
+func (g *MicroGenerator) genMethodBodyAssignmentsForGeneratedOutput(ctx *context, rpc *protobuf.RPC, msg *protobuf.Message) (lhs []ast.Expr) {
 	for i, f := range msg.Fields {
 		if f == nil {
 			lhs = append(lhs, ast.NewIdent("_"))
 		} else {
 			lhs = append(lhs, ast.NewIdent(fmt.Sprintf(
-				"result.Result%d", i+1,
+				"tempResult.Result%d", i+1,
 			)))
 		}
 	}
 	return
 }
 
-func emptyBodyForMethodCall(body *ast.BlockStmt, methodCall ast.Expr) *ast.BlockStmt {
-	body.List = []ast.Stmt{
-		&ast.ExprStmt{
-			X: methodCall,
-		},
-		new(ast.ReturnStmt),
-	}
-	return body
-}
-
-func (g *Generator) genMethodBodyForGeneratedOutput(ctx *context, rpc *protobuf.RPC, typ *ast.FuncType) *ast.BlockStmt {
+// 返回值需要封装的情况:...
+func (g *MicroGenerator) genMethodBodyForGeneratedOutput(ctx *context, rpc *protobuf.RPC, typ *ast.FuncType) *ast.BlockStmt {
 	body := g.genBaseMethodBody(typ)
 	methodCall := g.genMethodCall(ctx, rpc)
 	call := &ast.AssignStmt{
@@ -260,6 +290,7 @@ func (g *Generator) genMethodBodyForGeneratedOutput(ctx *context, rpc *protobuf.
 		Rhs: []ast.Expr{methodCall},
 	}
 
+	// message struct of output
 	msg := ctx.findMessage(typeName(rpc.Output))
 
 	if len(msg.Fields) == 0 && !rpc.HasError {
@@ -276,36 +307,45 @@ func (g *Generator) genMethodBodyForGeneratedOutput(ctx *context, rpc *protobuf.
 		call.Lhs = append(call.Lhs, ast.NewIdent("err"))
 	}
 
+	// add *result = *tempResult
+	resultOutput := g.genResultOutputMethodBody(typ)
+	body.List = append(body.List, resultOutput)
+
 	body.List = append(body.List, new(ast.ReturnStmt))
 	return body
 }
 
-func (g *Generator) genMethodBodyForNotGeneratedOutput(ctx *context, rpc *protobuf.RPC, typ *ast.FuncType) *ast.BlockStmt {
-	body := g.genBaseMethodBody(typ)
-	methodCall := g.genMethodCall(ctx, rpc)
+// func with no output with aux := RandomCategory()...
+func (g *MicroGenerator) genMethodBodyForNotGeneratedOutput(ctx *context, rpc *protobuf.RPC, typ *ast.FuncType) *ast.BlockStmt {
+	body := g.genBaseMethodBody(typ) // temp = new(MyDuration)
+	methodCall := g.genMethodCall(ctx, rpc) // func call part. like : GetDurationForLengthCtx(ctx, in.Arg1)..
 	call := &ast.AssignStmt{Tok: token.ASSIGN}
 
+	// whether rpc.Output is return *ptr value
 	needToAddressOutput := !isGenerated(rpc.Output) && !rpc.Output.IsNullable()
 
-	// Specific code
+	// Specific code ,if address ..
 	if needToAddressOutput {
 		call.Lhs = append(call.Lhs, ast.NewIdent("aux"))
 		call.Tok = token.DEFINE
 	} else {
-		call.Lhs = append(call.Lhs, ast.NewIdent("result"))
+		call.Lhs = append(call.Lhs, ast.NewIdent("tempResult"))
 	}
 
+	// have error return...
 	if rpc.HasError {
 		call.Lhs = append(call.Lhs, ast.NewIdent("err"))
 	}
 
+	//
 	call.Rhs = append(call.Rhs, methodCall)
 	body.List = append(body.List, call)
 
+	// result = &aux
 	if needToAddressOutput {
 		body.List = append(body.List, &ast.AssignStmt{
 			Tok: token.ASSIGN,
-			Lhs: []ast.Expr{ast.NewIdent("result")},
+			Lhs: []ast.Expr{ast.NewIdent("tempResult")},
 			Rhs: []ast.Expr{
 				&ast.UnaryExpr{
 					Op: token.AND,
@@ -314,27 +354,32 @@ func (g *Generator) genMethodBodyForNotGeneratedOutput(ctx *context, rpc *protob
 			},
 		})
 	}
+
+	// add *result = *tempResult
+	resultOutput := g.genResultOutputMethodBody(typ)
+	body.List = append(body.List, resultOutput)
+
 	body.List = append(body.List, new(ast.ReturnStmt))
 	return body
 }
 
 //
-func (g *Generator) declMethod(ctx *context, rpc *protobuf.RPC) ast.Decl {
+func (g *MicroGenerator) declMethod(ctx *context, rpc *protobuf.RPC) ast.Decl {
 	typ := g.genMethodType(ctx, rpc)
 	return &ast.FuncDecl{
-		Recv: fields(field("s", ptr(ast.NewIdent(ctx.implName)))),
+		Recv: fields(field("s", ptr(ast.NewIdent(ctx.implName)))), // (s *exampleServiceHandler)
 		Name: ast.NewIdent(rpc.Name),
 		Type: typ,
 		Body: g.genMethodBody(ctx, rpc, typ),
 	}
 }
 
-func (g *Generator) buildFile(ctx *context, decls []ast.Decl) *ast.File {
+func (g *MicroGenerator) buildFile(ctx *context, decls []ast.Decl) *ast.File {
 	f := &ast.File{
 		Name: ast.NewIdent(ctx.pkg.Name()),
 	}
 
-	var specs = []ast.Spec{newNamedImport("xcontext", "golang.org/x/net/context")}
+	var specs = []ast.Spec{newImport("context")}
 	for _, i := range ctx.imports {
 		specs = append(specs, newImport(i))
 	}
@@ -349,8 +394,8 @@ func (g *Generator) buildFile(ctx *context, decls []ast.Decl) *ast.File {
 	return f
 }
 
-func (g *Generator) writeFile(file *ast.File, path string) error {
-	fileName := filepath.Join(goSrc, path, "server.proteus.go")
+func (g *MicroGenerator) writeFile(file *ast.File, path string) error {
+	fileName := filepath.Join(goSrc, path, "server.micro.go")
 	f, err := os.Create(fileName)
 	if err != nil {
 		return err
@@ -358,60 +403,4 @@ func (g *Generator) writeFile(file *ast.File, path string) error {
 	defer f.Close()
 
 	return printer.Fprint(f, token.NewFileSet(), file)
-}
-
-func typeName(t protobuf.Type) string {
-	if typ, ok := t.(*protobuf.Named); ok {
-		return typ.Name
-	}
-	return ""
-}
-
-func isGenerated(t protobuf.Type) bool {
-	if typ, ok := t.(*protobuf.Named); ok {
-		return typ.Generated
-	}
-	return false
-}
-
-// shorthands for some AST structures
-
-func newImport(path string) *ast.ImportSpec {
-	return &ast.ImportSpec{
-		Path: &ast.BasicLit{
-			Kind:  token.STRING,
-			Value: fmt.Sprintf(`"%s"`, removeGoPath(path)),
-		},
-	}
-}
-
-func newNamedImport(name, path string) *ast.ImportSpec {
-	return &ast.ImportSpec{
-		Name: &ast.Ident{Name: name},
-		Path: &ast.BasicLit{
-			Kind:  token.STRING,
-			Value: fmt.Sprintf(`"%s"`, removeGoPath(path)),
-		},
-	}
-}
-
-func field(name string, typ ast.Expr) *ast.Field {
-	return &ast.Field{
-		Names: []*ast.Ident{ast.NewIdent(name)},
-		Type:  typ,
-	}
-}
-
-func fields(fields ...*ast.Field) *ast.FieldList {
-	return &ast.FieldList{List: fields}
-}
-
-func ptr(expr ast.Expr) ast.Expr {
-	return &ast.StarExpr{X: expr}
-}
-
-var goSrc = filepath.Join(os.Getenv("GOPATH"), "src")
-
-func removeGoPath(path string) string {
-	return strings.TrimLeft(strings.Replace(path, goSrc, "", -1), "/")
 }

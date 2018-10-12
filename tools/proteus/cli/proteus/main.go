@@ -146,7 +146,7 @@ func genAll(c *cli.Context) error {
 	// 注意: 同一个包里的公有结构无法引用，因此公有结构要单独在一个包里被应用....
 	for _, p := range packages {
 		outPath := goSrc
-		proto := filepath.Join(path, p, "generated.proto") // -f path + packagename + "*.proto"
+		proto := filepath.Join(path, p, "*.proto") // -f path + packagename + "generated.proto"
 
 		if err := protocExec(protocPath, p, outPath, proto); err != nil {
 			return fmt.Errorf("error generating Go files from %q: %s", proto, err)
@@ -154,21 +154,33 @@ func genAll(c *cli.Context) error {
 
 		matches, err := filepath.Glob(filepath.Join(path, p, "*.pb.go"))
 		if err != nil {
-			return fmt.Errorf("error moving Go files")
+			return fmt.Errorf("error moving Go pb files")
 		}
 
 		moveToDir := filepath.Join(outPath, p)
 		for _, s := range matches {
 			mv(s, moveToDir)
 		}
+
+		// move micro.go
+		matches, err = filepath.Glob(filepath.Join(path, p, "*.micro.go"))
+		if err != nil {
+			return fmt.Errorf("error moving Go micro files")
+		}
+
+		moveToDir = filepath.Join(outPath, p)
+		for _, s := range matches {
+			mv(s, moveToDir)
+		}
 	}
 
 	// generator json gateway for gin using https://github.com/grpc-ecosystem/grpc-gateway...
-	// Todo: ...
+	// Todo: ...直接自己marshal?..
 	genHttpServer(c)
 
 	// generate grpc server handler for micro, to modify  ...
 	// generate micro service example for micro...
+	// grpcserver 和 microserver对比....
 	return genRPCServer(c)
 }
 
@@ -213,8 +225,11 @@ func mv(from, to string) error {
 	return cmd.Run()
 }
 
+// use gogofaster ..
 func genAllGoFastOutOption(outPath string) string {
-	str := "--gofast_out=plugins=grpc"
+	// str := "--gofast_out=plugins=grpc"
+	// 解决XXX_unrecognized生成问题...
+	str := "--gogofaster_out=plugins=grpc"
 	importMappings := protobuf.DefaultMappings.ToGoOutPath()
 
 	if importMappings != "" {
@@ -232,7 +247,7 @@ func genAllMicroOutOption(outPath string) string {
 	importMappings := protobuf.DefaultMappings.ToGoOutPath()
 
 	if importMappings != "" {
-		str += fmt.Sprintf(",%s", importMappings)
+		str += fmt.Sprintf("%s", importMappings)
 	}
 
 	// output path..
