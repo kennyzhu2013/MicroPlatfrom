@@ -1,0 +1,52 @@
+{{define "title"}}Service{{end}}
+{{define "heading"}}<h3>{{with $svc := index .Results 0}}{{$svc.Name}}{{end}}</h3>{{end}}
+{{define "content"}}
+	<hr>
+	<h4>Nodes</h4>
+	{{range .Results}}
+	<h5>Version {{.Version}}</h5>
+	<table class="table table-bordered table-striped">
+		<thead>
+			<th>Id</th>
+			<th>Address</th>
+			<th>Port</th>
+			<th>Metadata</th>
+		<thead>
+		<tbody>
+			{{range .Nodes}}
+			<tr>
+				<td>{{.Id}}</td>
+				<td>{{.Address}}</td>
+				<td>{{.Port}}</td>
+				<td>{{ range $key, $value := .Metadata }}{{$key}}={{$value}} {{end}}</td>
+			</tr>
+			{{end}}
+		</tbody>
+	</table>
+	{{end}}
+	{{with $svc := index .Results 0}}
+	{{if $svc.Endpoints}}
+	<h4>Endpoints</h4>
+	<hr/>
+	{{end}}
+	{{range $svc.Endpoints}}
+		<h4>{{.Name}}</h4>
+		<table class="table table-bordered">
+			<tbody>
+				<tr>
+					<th class="col-sm-2" scope="row">Metadata</th>
+					<td>{{ range $key, $value := .Metadata }}{{$key}}={{$value}} {{end}}</td>
+				</tr>
+				<tr>
+					<th class="col-sm-2" scope="row">Request</th>
+					<td><pre>{{format .Request}}</pre></td>
+				</tr>
+				<tr>
+					<th class="col-sm-2" scope="row">Response</th>
+					<td><pre>{{format .Response}}</pre></td>
+				</tr>
+			</tbody>
+		</table>
+	{{end}}
+	{{end}}
+{{end}}

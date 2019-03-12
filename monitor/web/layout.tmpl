@@ -1,0 +1,50 @@
+{{define "layout"}}
+<html>
+	<head>
+		<title>Micro Web</title>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+		<style>
+		{{ template "style" . }}
+		</style>
+		{{ template "head" . }}
+	</head>
+	<body>
+	  <nav class="navbar navbar-inverse">
+	    <div class="container">
+              <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navBar">
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">Micro</a>
+              </div>
+              <div class="collapse navbar-collapse" id="navBar">
+	        <ul class="nav navbar-nav navbar-right">
+	          <li><a href="cli">CLI</a></li>
+	          <li><a href="registry">Registry</a></li>
+	          <li><a href="call">Call</a></li>
+	          {{if .StatsURL}}<li><a href="{{.StatsURL}}" class="navbar-link">Stats</a></li>{{end}}
+	        </ul>
+              </div>
+	    </div>
+	  </nav>
+          <div class="container">
+            <div class="row">
+	      <div class="col-sm-12">
+                {{ template "heading" . }}
+                {{ template "content" . }}
+              </div>
+            </div>
+          </div>
+	  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+	  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+	  {{template "script" . }}
+	</body>
+</html>
+{{end}}
+{{ define "style" }}{{end}}
+{{ define "head" }}{{end}}
+{{ define "script" }}{{end}}
+{{ define "title" }}{{end}}
+{{ define "heading" }}<h3>&nbsp;</h3>{{end}}
