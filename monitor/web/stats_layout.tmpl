@@ -1,0 +1,86 @@
+{{define "layout"}}
+<html>
+	<head>
+		<title>微服务统计平台</title>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+		<style>
+		{{ template "style" . }}
+		</style>
+	</head>
+	<body>
+	  <nav class="navbar navbar-inverse">
+	    <div class="container">
+              <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navBar">
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">Micro</a>
+              </div>
+              <div class="collapse navbar-collapse" id="navBar">
+	        <ul class="nav navbar-nav navbar-right">
+	          <li><a href="cli">CLI</a></li>
+	          <li><a href="registry">Registry</a></li>
+	          <li><a href="call">Call</a></li>
+	          <li><a href="javascript:void(0)" class="navbar-link">Stats</a></li>
+	        </ul>
+              </div>
+	    </div>
+	  </nav>
+	      <div id="app">
+              <div class="container">
+                <div class="row">
+                    <span class="pull-right update h6"></span>
+                    <div class="col-sm-5">
+                        <div id="tree">
+                            <Tree :data="treeData" :check-strictly=true  show-checkbox @on-check-change="show"></Tree>
+                        </div>
+                    </div>
+                    <div class="col-sm-7">
+                      <h4>&nbsp;</h4>
+                      <table class="table table-bordered">
+                        <caption>Info</caption>
+                        <tbody>
+                          <tr>
+                            <th>Started</th>
+                            <td class="started"></td>
+                          </tr>
+                          <tr>
+                            <th>Uptime</th>
+                            <td class="uptime"></td>
+                          </tr>
+                          <tr>
+                            <th>Memory</th>
+                            <td class="memory"></td>
+                          </tr>
+                          <tr>
+                            <th>Threads</th>
+                            <td class="threads"></td>
+                          </tr>
+                          <tr>
+                            <th>GC</th>
+                            <td class="gc"></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                </div>
+                {{ template "content" . }}
+              </div>
+          </div>
+
+            <script src="https://cdn.bootcss.com/jquery/2.1.4/jquery.min.js"></script>
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+            <script src="//vuejs.org/js/vue.min.js"></script>
+            <link rel="stylesheet" href="//unpkg.com/iview/dist/styles/iview.css">
+            <script src="//unpkg.com/iview/dist/iview.min.js"></script>
+            <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/canvasjs/1.7.0/canvasjs.min.js"></script>
+            <script src="https://cdn.bootcss.com/echarts/4.2.1-rc1/echarts.min.js"></script>
+	  {{template "script" . }}
+	</body>
+</html>
+{{end}}
+{{ define "style" }}{{end}}
+{{ define "script" }}{{end}}
+{{ define "title" }}{{end}}

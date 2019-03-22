@@ -1,0 +1,280 @@
+{{define "title"}}Stats{{end}}
+{{define "content"}}
+  <div id="chartsContent" class="row"></div>
+{{end}}
+{{define "script"}}
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+            treeData: [{
+                           title: 'total',
+                           expand: true,
+                           checked: true,
+                           children: []
+                   }],
+            myChart: {},
+            chartForms:[],
+            dataPoints:[],
+            option : {}
+        },
+        mounted:function(){
+            var _this = this;
+            this.loadStats();
+        },
+        methods:{
+            loadChartForm(counters,chartForms) {
+                var _this = this;
+                
+                //chart
+            	var dataPoints1 = [];
+            	var dataPoints2 = [];
+            	var dataPoints3 = [];
+            	var two = 0;
+            	var four = 0;
+            	var five = 0;
+
+            	for (i = 0; i < counters.length; i++) {
+            		var time = new Date((counters[i].timestamp + 5) * 1000);
+                            var counter = counters[i];
+
+                            if (counter["status_codes"]["20x"] != undefined) {
+            		  two = counter["status_codes"]["20x"];
+                            } else {
+                              two = 0;
+                            }
+
+                            if (counter["status_codes"]["50x"] != undefined) {
+            		  five = counter["status_codes"]["50x"];
+                            } else {
+                              five = 0;
+                            }
+
+                            if (counter["status_codes"]["40x"] != undefined) {
+            		  four = counter["status_codes"]["40x"];
+                            } else {
+                              four = 0;
+                            }
+            	    dataPoints1.push({
+            	        name:[time.getHours(),time.getMinutes(),time.getSeconds()].join(":"),
+                        value: [
+                            time.getTime(),two
+                        ]
+            	    });
+            	    dataPoints2.push({
+                        name:[time.getHours(),time.getMinutes(),time.getSeconds()].join(":"),
+                        value: [
+                            time.getTime(),four
+                        ]
+                    });
+                    dataPoints3.push({
+                        name:[time.getHours(),time.getMinutes(),time.getSeconds()].join(":"),
+                        value: [
+                            time.getTime(),five
+                        ]
+                    });
+            	}
+                chartForms.chart.setOption({
+                    series:[
+                        {
+                            data:dataPoints1
+                        },
+                        {
+                            data:dataPoints2
+                        },
+                        {
+                            data:dataPoints3
+                        },
+                    ]
+                })
+                
+                
+                // form
+                var total = 0;
+                var tx = 0;
+                var fx = 0;
+                var fox = 0;
+
+                for (i = 0;  i < counters.length; i++) {
+                  var counter = counters[i];
+                  total += counter["total_reqs"];
+                  if (counter["status_codes"]["20x"] != undefined) {
+                    tx += counter["status_codes"]["20x"];
+                  };
+                  if (counter["status_codes"]["40x"] != undefined) {
+                    fox += counter["status_codes"]["40x"];
+                  };
+                  if (counter["status_codes"]["50x"] != undefined) {
+                    fx += counter["status_codes"]["50x"];
+                  };
+                };
+
+                var form = $(chartForms.form);
+                form.find('.total').text(total);
+                form.find('.20x').text(tx);
+                form.find('.40x').text(fox);
+                form.find('.50x').text(fx);
+            },
+          loadStats() {
+            var _this = this;
+            var req = new XMLHttpRequest();
+            req.onreadystatechange = function() {
+            if (req.readyState == 4 && req.status == 200) {
+                console.log(req.responseText);
+
+                    var data = JSON.parse(req.responseText);
+                    var started = new Date(data["started"]*1000);
+                    var uptime = new Date() - started;
+
+                    // uptime
+                    uptime = uptime / 1000;
+                    if (uptime > 3600) {
+                      var time = uptime;
+                  var hours   = Math.floor(time / 3600);
+                  var minutes = Math.floor((time - (hours * 3600)) / 60);
+                  var seconds = Math.floor(time - (hours * 3600) - (minutes * 60));
+
+                  if (hours   < 10) {hours   = "0"+hours;}
+                  if (minutes < 10) {minutes = "0"+minutes;}
+                  if (seconds < 10) {seconds = "0"+seconds;}
+                  uptime = hours+':'+minutes+':'+seconds;
+                    } else {
+                      uptime = uptime + "s";
+                    }
+
+                    // info
+                    $('.update').text("Last updated " + (new Date()).toUTCString());
+                    $('.started').text(started.toUTCString());
+                    $('.uptime').text(uptime);
+                    $('.memory').text(data["memory"]);
+                    $('.threads').text(data["threads"]);
+                    $('.gc').text(data["gc_pause"]);     
+
+                    //图表初始化
+                    if(_this.treeData[0].children.length == 0){
+                        _this.chartForms.push({treeNode:_this.treeData[0]});
+                         for(var name in data["counter_details"]){
+                            var child = {
+                                       title: name,
+                                       expand: true,
+                                    }
+                            _this.treeData[0].children.push(child);
+                            _this.chartForms.push({treeNode:child});
+                         }
+                          _this.option = {
+                                title: {
+                                        text: 'Request Load'
+                                    },
+                                    tooltip: {},
+                                    legend: {
+                                        data:['20x','40x','50x']
+                                    },
+                                    xAxis: {
+                                        type: 'time',
+                                        splitLine: {
+                                            show: false
+                                        }
+                                    },
+                                    yAxis: {
+                                      splitLine: {
+                                          show: false
+                                      }
+                                    },
+                                    series: [
+                                        {
+                                            name: '20x',
+                                            type: 'line',
+                                            data: []
+                                        },
+                                        {
+                                            name: '40x',
+                                            type: 'line',
+                                            data: []
+                                        },
+                                        {
+                                            name: '50x',
+                                            type: 'line',
+                                            data: []
+                                        }
+                                    ]
+                          };
+                         for(var index in _this.chartForms){
+                            var wrapper = document.createElement("div");
+                            var chartEle = document.createElement("div");
+                            var formEle = document.createElement("div");
+                            wrapper.className = "row";
+                            wrapper.setAttribute("data-name", _this.chartForms[index].treeNode.title);
+                            wrapper.appendChild(chartEle);
+                            wrapper.appendChild(formEle);
+                            formEle.className = "col-sm-4";
+                            formEle.innerHTML = `<div>
+                                                 <h4>&nbsp;</h4>
+                                                 <table class="table table-bordered">
+                                                   <caption>Requests</caption>
+                                                   <tbody>
+                                                     <tr>
+                                                       <th>Total</th>
+                                                       <td class="total"></td>
+                                                     </tr>
+                                                     <tr>
+                                                       <th>20x</th>
+                                                       <td class="20x"></td>
+                                                     </tr>
+                                                     <tr>
+                                                       <th>40x</th>
+                                                       <td class="40x"></td>
+                                                     </tr>
+                                                     <tr>
+                                                       <th>50x</th>
+                                                       <td class="50x"></td>
+                                                     </tr>
+                                                   </tbody>
+                                                 </table>
+                                             </div>`;
+                            _this.chartForms[index].form = formEle;
+                            chartEle.className = "col-sm-8";
+                            chartEle.id = "chart"+ index;
+                            chartEle.style = "height: 300px; ";
+                            document.getElementById("chartsContent").appendChild(wrapper);
+                            _this.chartForms[index].chart = echarts.init(chartEle);
+                            _this.option.title.text = _this.chartForms[index].treeNode.title;
+                            _this.chartForms[index].chart.setOption(_this.option);
+                            if(!_this.chartForms[index].treeNode.checked){
+                                wrapper.style.display="none";
+                            }
+                         }
+                    }
+
+                    if(_this.chartForms[0].treeNode.checked){
+                        _this.loadChartForm(data["counters"],_this.chartForms[0]);
+                    }
+                    var i = 1;
+                    for(var name in data["counter_details"]){
+                        if(_this.chartForms[i].treeNode.checked){
+                            _this.loadChartForm(data["counter_details"][name],_this.chartForms[i]);
+                        }
+                        i++;
+                    }
+            }
+            }
+
+            var request = {};
+            req.open("GET", window.location.href, true);
+            req.setRequestHeader("Content-type","application/json");
+            req.send(JSON.stringify(request));
+
+            setTimeout(function() {
+              _this.loadStats();
+            }, 5000);
+          },
+          show(arr,currentNode){
+            if(currentNode.checked){
+                document.querySelector("div[data-name='"+ currentNode.title+"']").style.display = "block";
+            }else{
+                document.querySelector("div[data-name='"+ currentNode.title+"']").style.display = "none";
+            }
+          }
+        }
+    })
+</script>
+{{end}}
