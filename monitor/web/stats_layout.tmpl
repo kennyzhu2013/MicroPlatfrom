@@ -31,42 +31,46 @@
 	      <div id="app">
               <div class="container">
                 <div class="row">
-                    <span class="pull-right update h6"></span>
-                    <div class="col-sm-5">
-                        <div id="tree">
+                    <div class="col-sm-2">
+                        <div id="tree" style="position:fixed">
                             <Tree :data="treeData" :check-strictly=true  show-checkbox @on-check-change="show"></Tree>
                         </div>
                     </div>
-                    <div class="col-sm-7">
-                      <h4>&nbsp;</h4>
-                      <table class="table table-bordered">
-                        <caption>Info</caption>
-                        <tbody>
-                          <tr>
-                            <th>Started</th>
-                            <td class="started"></td>
-                          </tr>
-                          <tr>
-                            <th>Uptime</th>
-                            <td class="uptime"></td>
-                          </tr>
-                          <tr>
-                            <th>Memory</th>
-                            <td class="memory"></td>
-                          </tr>
-                          <tr>
-                            <th>Threads</th>
-                            <td class="threads"></td>
-                          </tr>
-                          <tr>
-                            <th>GC</th>
-                            <td class="gc"></td>
-                          </tr>
-                        </tbody>
-                      </table>
+                    <div class="col-sm-10">
+                        <div class="row">
+                            <span class="pull-right update h6"></span>
+                            <div class="col-sm-10">
+                              <h4>&nbsp;</h4>
+                              <table class="table table-bordered">
+                                <caption>Info</caption>
+                                <tbody>
+                                  <tr>
+                                    <th>Started</th>
+                                    <td class="started"></td>
+                                  </tr>
+                                  <tr>
+                                    <th>Uptime</th>
+                                    <td class="uptime"></td>
+                                  </tr>
+                                  <tr>
+                                    <th>Memory</th>
+                                    <td class="memory"></td>
+                                  </tr>
+                                  <tr>
+                                    <th>Threads</th>
+                                    <td class="threads"></td>
+                                  </tr>
+                                  <tr>
+                                    <th>GC</th>
+                                    <td class="gc"></td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                        </div>
+                        {{ template "content" . }}
                     </div>
                 </div>
-                {{ template "content" . }}
               </div>
           </div>
 
@@ -81,6 +85,8 @@
 	</body>
 </html>
 {{end}}
-{{ define "style" }}{{end}}
+{{ define "style" }}
+
+{{end}}
 {{ define "script" }}{{end}}
 {{ define "title" }}{{end}}
