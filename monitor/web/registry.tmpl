@@ -1,73 +1,83 @@
 {{define "title"}}Service{{end}}
 {{define "heading"}}
-    <div class="autocomplete">
-        <h4><input class="form-control input-lg search" type=text placeholder="Search"/></h4>
-        <ul class="list-group autocomplete-item">
+    <div class="col-sm-4 left-content">
+        <div class="autocomplete">
+            <h4><input class="form-control input-lg search" type=text placeholder="Search"/></h4>
+            <ul class="list-group autocomplete-item">
+                {{range .SvcNames}}
+                    <li class="list-group-item"  data-filter={{.}}><a href="registry?service={{.}}">{{.}}</a></li>
+                {{end}}
+            </ul>
+        </div>
+        <div class="list">
             {{range .SvcNames}}
-                <li class="list-group-item"  data-filter={{.}}><a href="registry?service={{.}}">{{.}}</a></li>
+                <a href="registry?service={{.}}" data-filter={{.}} class="btn btn-default btn-lg" style="margin: 5px 0 5px 3px;border-radius:0">{{.}}</a>
             {{end}}
-        </ul>
+        </div>
     </div>
-    {{range .SvcNames}}
-        <a href="registry?service={{.}}" data-filter={{.}} class="btn btn-default btn-lg" style="margin: 5px 3px 5px 3px;">{{.}}</a>
-    {{end}}
 {{end}}
 {{define "content"}}
-    <h3>{{ if .Results }} {{with $svc := index .Results 0}}{{$svc.Name}}{{end}} {{end}}</h3>
-	<hr>
-	<h4>Nodes</h4>
-	{{range .Results}}
-	<h5>Version {{.Version}}</h5>
-	<table class="table table-bordered table-striped">
-		<thead>
-			<th>Id</th>
-			<th>Address</th>
-			<th>Port</th>
-			<th>Metadata</th>
-		<thead>
-		<tbody>
-			{{range .Nodes}}
-			<tr>
-				<td>{{.Id}}</td>
-				<td>{{.Address}}</td>
-				<td>{{.Port}}</td>
-				<td>{{ range $key, $value := .Metadata }}{{$key}}={{$value}} {{end}}</td>
-			</tr>
-			{{end}}
-		</tbody>
-	</table>
-	{{end}}
-	{{ if .Results }} 
-	{{with $svc := index .Results 0}}
-	{{if $svc.Endpoints}}
-	<h4>Endpoints</h4>
-	<hr/>
-	{{end}}
-	{{range $svc.Endpoints}}
-		<h4>{{.Name}}</h4>
-		<table class="table table-bordered">
-			<tbody>
-				<tr>
-					<th class="col-sm-2" scope="row">Metadata</th>
-					<td>{{ range $key, $value := .Metadata }}{{$key}}={{$value}} {{end}}</td>
-				</tr>
-				<tr>
-					<th class="col-sm-2" scope="row">Request</th>
-					<td><pre>{{format .Request}}</pre></td>
-				</tr>
-				<tr>
-					<th class="col-sm-2" scope="row">Response</th>
-					<td><pre>{{format .Response}}</pre></td>
-				</tr>
-			</tbody>
-		</table>
-	{{end}}
-	{{end}}
-	{{end}}
+    <div class="col-sm-8">
+        <h3>{{ if .Results }} {{with $svc := index .Results 0}}{{$svc.Name}}{{end}} {{end}}</h3>
+        <hr>
+        <h4>Nodes</h4>
+        {{range .Results}}
+        <h5>Version {{.Version}}</h5>
+        <table class="table table-bordered table-striped">
+            <thead>
+                <th>Id</th>
+                <th>Address</th>
+                <th>Port</th>
+                <th>Metadata</th>
+            <thead>
+            <tbody>
+                {{range .Nodes}}
+                <tr>
+                    <td>{{.Id}}</td>
+                    <td>{{.Address}}</td>
+                    <td>{{.Port}}</td>
+                    <td>{{ range $key, $value := .Metadata }}{{$key}}={{$value}} {{end}}</td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+        {{end}}
+        {{ if .Results }}
+        {{with $svc := index .Results 0}}
+        {{if $svc.Endpoints}}
+        <h4>Endpoints</h4>
+        <hr/>
+        {{end}}
+        {{range $svc.Endpoints}}
+            <h4>{{.Name}}</h4>
+            <table class="table table-bordered">
+                <tbody>
+                    <tr>
+                        <th class="col-sm-2" scope="row">Metadata</th>
+                        <td>{{ range $key, $value := .Metadata }}{{$key}}={{$value}} {{end}}</td>
+                    </tr>
+                    <tr>
+                        <th class="col-sm-2" scope="row">Request</th>
+                        <td><pre>{{format .Request}}</pre></td>
+                    </tr>
+                    <tr>
+                        <th class="col-sm-2" scope="row">Response</th>
+                        <td><pre>{{format .Response}}</pre></td>
+                    </tr>
+                </tbody>
+            </table>
+        {{end}}
+        {{end}}
+        {{end}}
+    </div>
 {{end}}
 {{define "script"}}
 <script type="text/javascript">
 jQuery(function($, undefined) {
+
+    var service = location.search.split("?")[1]&&location.search.split("?")[1].split("=")[1];
+    $("a[data-filter='"+service+"']").css("backgroundColor","#B03A5B");
+
 	var refs = $('li[data-filter]');
 	$('.search').on('keyup', function() {
 		var val = $.trim(this.value);
@@ -80,7 +90,6 @@ jQuery(function($, undefined) {
 	    $(".autocomplete-item").show();
 	});
 	$('.search').on('blur',function(evt){
-	    console.log(evt)
 	    setTimeout(function(){
             $(".autocomplete-item").hide();
 	    },200)
@@ -89,8 +98,14 @@ jQuery(function($, undefined) {
 </script>
 {{end}}
 {{ define "style" }}
+    .left-content{
+        border-right: 1px solid #ccc;
+        min-height: 90%;
+        padding-right: 0;
+    }
     .autocomplete{
         position:relative;
+        width: 90%;
     }
     .autocomplete-item{
         display:none;
@@ -101,6 +116,7 @@ jQuery(function($, undefined) {
         max-height: 206px;
         overflow-y: scroll;
         border-bottom: 1px solid #ddd;
+        font-size: 18px;
     }
     .autocomplete-item li:hover{
         background:#f0f0f0;
@@ -112,5 +128,13 @@ jQuery(function($, undefined) {
     }
     .autocomplete-item a:hover{
         text-decoration: none;
+    }
+    .list a{
+        margin: 0 3px 0 3px;
+        text-align: left;
+        padding: 0;
+        display: block;
+        border: none;
+        padding-left: 12px;
     }
 {{end}}

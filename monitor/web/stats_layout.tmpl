@@ -7,7 +7,7 @@
 		{{ template "style" . }}
 		</style>
 	</head>
-	<body>
+	<body style="font-size: 14px;">
 	  <nav class="navbar navbar-inverse">
 	    <div class="container">
               <div class="navbar-header">
@@ -36,7 +36,7 @@
                             <Tree :data="treeData" :check-strictly=true  show-checkbox @on-check-change="show"></Tree>
                         </div>
                     </div>
-                    <div class="col-sm-10">
+                    <div class="col-sm-10 right-content">
                         <div class="row">
                             <span class="pull-right update h6"></span>
                             <div class="col-sm-10">
@@ -86,7 +86,15 @@
 </html>
 {{end}}
 {{ define "style" }}
-
+.right-content{
+    border-left: 1px solid #ccc;
+    min-height: 90%;
+    padding-left: 30px;
+    padding-right: 0;
+}
+.ivu-tree ul {
+    font-size: 16px!important;
+}
 {{end}}
 {{ define "script" }}{{end}}
 {{ define "title" }}{{end}}
