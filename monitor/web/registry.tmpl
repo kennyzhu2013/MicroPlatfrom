@@ -1,4 +1,4 @@
-{{define "title"}}Registry{{end}}
+{{define "title"}}Service{{end}}
 {{define "heading"}}
     <div class="autocomplete">
         <h4><input class="form-control input-lg search" type=text placeholder="Search"/></h4>
@@ -9,10 +9,61 @@
         </ul>
     </div>
     {{range .SvcNames}}
-        <a href="registry?service={{.}}" class="btn btn-default btn-lg" style="margin: 5px 3px 5px 3px;">{{.}}</a>
+        <a href="registry?service={{.}}" data-filter={{.}} class="btn btn-default btn-lg" style="margin: 5px 3px 5px 3px;">{{.}}</a>
     {{end}}
 {{end}}
 {{define "content"}}
+    <h3>{{ if .Results }} {{with $svc := index .Results 0}}{{$svc.Name}}{{end}} {{end}}</h3>
+	<hr>
+	<h4>Nodes</h4>
+	{{range .Results}}
+	<h5>Version {{.Version}}</h5>
+	<table class="table table-bordered table-striped">
+		<thead>
+			<th>Id</th>
+			<th>Address</th>
+			<th>Port</th>
+			<th>Metadata</th>
+		<thead>
+		<tbody>
+			{{range .Nodes}}
+			<tr>
+				<td>{{.Id}}</td>
+				<td>{{.Address}}</td>
+				<td>{{.Port}}</td>
+				<td>{{ range $key, $value := .Metadata }}{{$key}}={{$value}} {{end}}</td>
+			</tr>
+			{{end}}
+		</tbody>
+	</table>
+	{{end}}
+	{{ if .Results }} 
+	{{with $svc := index .Results 0}}
+	{{if $svc.Endpoints}}
+	<h4>Endpoints</h4>
+	<hr/>
+	{{end}}
+	{{range $svc.Endpoints}}
+		<h4>{{.Name}}</h4>
+		<table class="table table-bordered">
+			<tbody>
+				<tr>
+					<th class="col-sm-2" scope="row">Metadata</th>
+					<td>{{ range $key, $value := .Metadata }}{{$key}}={{$value}} {{end}}</td>
+				</tr>
+				<tr>
+					<th class="col-sm-2" scope="row">Request</th>
+					<td><pre>{{format .Request}}</pre></td>
+				</tr>
+				<tr>
+					<th class="col-sm-2" scope="row">Response</th>
+					<td><pre>{{format .Response}}</pre></td>
+				</tr>
+			</tbody>
+		</table>
+	{{end}}
+	{{end}}
+	{{end}}
 {{end}}
 {{define "script"}}
 <script type="text/javascript">
@@ -51,13 +102,12 @@ jQuery(function($, undefined) {
         overflow-y: scroll;
         border-bottom: 1px solid #ddd;
     }
-
     .autocomplete-item li:hover{
         background:#f0f0f0;
     }
     .autocomplete-item a{
+        width: 100%;
         color: black;
-        width:100%;
         display: block;
     }
     .autocomplete-item a:hover{
