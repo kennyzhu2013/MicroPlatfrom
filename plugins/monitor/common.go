@@ -9,6 +9,7 @@ package monitor
 
 import (
 	"github.com/micro/go-micro/registry"
+	"time"
 )
 
 
@@ -21,6 +22,9 @@ type Heartbeat struct {
 }
 
 const (
+	// default ttl value
+    HeartBeatTTL = time.Second * 60
+
 	// state define here.
 	ServiceStatus = "ServiceStatus"
 	NormalState = "normal"
