@@ -98,7 +98,7 @@ type ChangeSet struct {
 
 type Option func(o *Options)
 
-type SourceOption func(o *SourceOptions)
+type Options func(o *SourceOptions)
 
 var (
 	DefaultPollInterval = time.Second * 30

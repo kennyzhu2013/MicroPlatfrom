@@ -52,7 +52,7 @@ import (
 //
 // A single file per package will be generated containing all the RPC methods.
 // The file will be written to the package path and it will be named
-// "server.proteus.go"
+// "server.micro.go"
 type MicroGenerator struct {
 	importer *parseutil.Importer
 }

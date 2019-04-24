@@ -7,7 +7,7 @@
 	},
 	"database": {
 		"DriverName":"mysql",
-		"DataSource":"root:123456@tcp(mysql-test:40012)/test?charset=utf8",
+		"DataSource":"root:Cmic2018@tcp(mysql-test:40012)/test?charset=utf8",
 		"MaxConnNum": 20000,
 		"MaxIdle": 30,
 		"MaxOpen": 50,

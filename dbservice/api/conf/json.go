@@ -15,21 +15,21 @@ import (
 )
 
 var AppConf struct{
-	//logger..
+	// logger..
 	LogLevel int32 `json:"LogLevel"`
 	LogPath  string    `json:"LogPath"`
 
-	//srv set..
+	// srv set..
 	ApiName string     `json:"ApiName"`
 	SrvName string     `json:"SrvName"`
 	VersionTag int     `json:"Version"`
 
-	//Todo:
+	// Todo:
 }
 
-//self init...configFile = "./conf/api.json"...
+// self init...configFile = "./conf/api.json"...
 func Init(configFile string) {
-	//read config
+	// read config
 	if err := config.Load(file.NewSource(
 		file.WithPath(configFile),
 	)); err != nil {
@@ -45,7 +45,7 @@ func Init(configFile string) {
 	if AppConf.LogPath == "" {
 		AppConf.LogPath = "/dev/stdout"
 	}
-	//init logger..
+	// init logger..
 	log.InitLogger(
 		log.WithLevel( log.Level(AppConf.LogLevel) ),
 		log.WithFields(log.Fields{

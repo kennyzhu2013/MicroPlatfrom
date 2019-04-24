@@ -28,7 +28,7 @@ func main() {
 
 	// not need micro web, call by registry
 	// can be called by any other server..
-	r,err := c.Get("http://go.micro.srv.iris/Preferences/GetPreferencesList?limit=2&index=1")
+	r,err := c.Get("http://go.micro.api.iris/Preferences/GetPreferencesList?limit=2&index=1")
 	if err != nil {
 		fmt.Println(err)
 		return

@@ -63,6 +63,8 @@ func main() {
 		fmt.Printf("Nodes info %+v\n", rsp[0].Nodes[0])
 	}
 
+	// micro health查询需要export MICRO_PROXY_ADDRESS=0.0.0.0:8002支持http json方式访问..
+
 	notify := make(chan os.Signal, 1)
 	signal.Notify(notify, syscall.SIGTERM, syscall.SIGINT, syscall.SIGKILL)
 	<-notify
