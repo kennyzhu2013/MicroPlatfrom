@@ -31,6 +31,8 @@ type etcdv3Registry struct {
 	leases   map[string]clientv3.LeaseID
 }
 
+var DefaultEtcdRegistry registry.Registry = NewRegistry()
+
 func init() {
 	cmd.DefaultRegistries["etcdv3"] = NewRegistry
 }
