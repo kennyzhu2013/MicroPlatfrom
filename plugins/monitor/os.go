@@ -112,7 +112,7 @@ func (o *os) heartbeat() {
 						node.Metadata[ServiceStatus] = status
 
 						// pub := o.opts.Client.NewPublication(HeartbeatTopic, hb)
-						err := registry.Register( hb.service )
+						err := registry.Register( hb.service, registry.RegisterTTL(o.opts.Interval)  )
 						if err != nil {
 							log.Fatal("Heartbeats check failed!")
 						}
