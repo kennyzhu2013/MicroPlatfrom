@@ -3,40 +3,40 @@
 @Author : kenny zhu
 @File : interface.go
 @Software: GoLand
-@Others:
+@Others: Default operations.
 */
 package log
 
-//logger
-var l Log
+// logger
+var defaultLog Log
 
 func InitLogger(opts ...Option)  {
-	l = newOS(opts...)
+	defaultLog = newOS(opts...)
 }
 
-//outer .interface...
+// outer .interface...
 func Debug(args ...interface{}) {
-	l.Debug(args...)
+	defaultLog.Debug(args...)
 }
 func Info(args ...interface{}) {
-	l.Info(args...)
+	defaultLog.Info(args...)
 }
 func Error(args ...interface{}) {
-	l.Error(args...)
+	defaultLog.Error(args...)
 }
 func Fatal(args ...interface{}) {
-	l.Fatal(args...)
+	defaultLog.Fatal(args...)
 }
 // Formatted logger
 func Debugf(format string, args ...interface{}){
-	l.Debugf(format, args...)
+	defaultLog.Debugf(format, args...)
 }
 func Infof(format string, args ...interface{}) {
-	l.Infof(format, args...)
+	defaultLog.Infof(format, args...)
 }
 func Errorf(format string, args ...interface{}) {
-	l.Errorf(format, args...)
+	defaultLog.Errorf(format, args...)
 }
 func Fatalf(format string, args ...interface{}) {
-	l.Fatalf(format, args...)
+	defaultLog.Fatalf(format, args...)
 }

@@ -4,24 +4,59 @@ import (
 	"encoding/json"
 	los "os"
 	"strconv"
-	"io"
+
+	"sync"
+	"sort"
+	"io/ioutil"
+	"fmt"
+	"path/filepath"
+	"strings"
 )
 
 type output struct {
 	opts OutputOptions
-
+	dirs string
 	err error
+
+	// json file encoder.
 	f   *los.File
+	mu   sync.Mutex
+
+	startRoll sync.Once
+	rollCh    chan bool
 }
 
+// logInfo is a convenience struct to return the filename and its embedded
+// timestamp.
+type logInfo struct {
+	sequence int
+	los.FileInfo
+}
+
+
 func (o *output) Send(e *Event) error {
+	o.mu.Lock()
+	defer o.mu.Unlock()
+
 	if o.f == nil {
 		return o.err
 	}
+
+	filename := o.f.Name()
+	info, err := los.Stat(filename)
+	if los.IsNotExist(err) {
+		o.f,_ = los.OpenFile(filename, los.O_CREATE|los.O_APPEND|los.O_WRONLY, 0666)
+	} else {
+		// judge is full.
+		if info.Size() >= FileSize {
+			o.rotate()
+		}
+	}
+
 	return json.NewEncoder(o.f).Encode(e)
 }
 
-func (o *output) Flush() error {
+func (o *output) flush() error {
 	if o.f == nil {
 		return o.err
 	}
@@ -29,23 +64,149 @@ func (o *output) Flush() error {
 }
 
 func (o *output) Close() error {
-	if o.f == nil {
-		return o.err
-	}
-	return o.f.Close()
+	o.mu.Lock()
+	defer o.mu.Unlock()
+	return o.close()
 }
 
 func (o *output) String() string {
 	return o.opts.Name
 }
 
-// sjlin 新增判断文件大小方法
-func (o *output) IsFull() bool {
-	outputSize, _ := o.f.Seek(io.SeekStart, io.SeekEnd)
-	if outputSize > FileSize {
-		return true
+func (o *output) rollRun() {
+	for _ = range o.rollCh {
+		// log?..
+		_ = o.rollRunOnce()
 	}
-	return false
+}
+
+// close closes the file if it is open.
+func (o *output) close() error {
+	if o.f == nil {
+		return nil
+	}
+
+	o.flush()
+	err := o.f.Close()
+	o.f = nil
+	return err
+}
+
+// openNew opens a new log file for writing, moving any old log file out of the
+// way.  This methods assumes the file has already been closed.
+func (o *output) openNew() error {
+	f, err := los.OpenFile(o.opts.Name, los.O_CREATE|los.O_APPEND|los.O_WRONLY, 0666)
+	o.f = f
+	return err
+}
+
+// if file is full, move..
+func (o *output)rotate()  error {
+	if err := o.close(); err != nil {
+		return err
+	}
+
+	// sync run.
+	o.startRoll.Do(func() {
+		o.rollCh = make(chan bool, 1)
+		go o.rollRun()
+	})
+	select {
+	case o.rollCh <- true:
+	default:
+	}
+
+	// after rotate, then create new.
+	if err := o.openNew(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (o *output) rollRunOnce() error {
+	files, err := o.oldLogFiles()
+	if err != nil  || len(files) < 1 {
+		return err
+	}
+
+	dir := o.dir()
+	for _, f := range files {
+		if f.sequence + 1 >= DefaultFileMaxNum {
+			errRemove := los.Remove(filepath.Join(dir, f.Name()))
+			if err == nil && errRemove != nil {
+				err = errRemove
+			}
+			continue
+		}
+
+		errMove := los.Rename(filepath.Join(dir, f.Name()),
+			filepath.Join(dir, o.nextFileName(f.sequence)))
+		if err == nil && errMove != nil {
+			err = errMove
+		}
+	}
+
+	return err
+}
+
+func (o *output) nextFileName(i int) string {
+	return o.opts.Name + "." + strconv.Itoa(i + 1)
+}
+
+// dir returns the directory for the current filename.
+func (o *output) dir() string {
+	if o.dirs == "" {
+		o.dirs = o.f.Name()
+	}
+	return filepath.Dir(o.dirs)
+}
+
+// oldLogFiles returns the list of backup log files stored in the same
+// directory as the current log file, sorted by ModTime
+func (o *output) oldLogFiles() ([]logInfo, error) {
+	files, err := ioutil.ReadDir(o.dir())
+	if err != nil {
+		return nil, fmt.Errorf("can't read log file directory: %s", err)
+	}
+	logFiles := []logInfo{}
+
+	prefix := o.opts.Name
+
+	for _, f := range files {
+		if f.IsDir() {
+			continue
+		}
+		if strings.HasPrefix(f.Name(), prefix) {
+			filename := f.Name()
+			ts := filename[len(prefix) : ]
+			sequence,_ := strconv.Atoi(ts)
+			logFiles = append(logFiles, logInfo{sequence, f})
+			continue
+		}
+
+		// error parsing means that the suffix at the end was not generated
+		// by lumberjack, and therefore it's not a backup file.
+	}
+
+	sort.Sort( byFormatSequence(logFiles) )
+
+	return logFiles, nil
+}
+
+// byFormatTime sorts by newest time formatted in the name.
+type byFormatSequence []logInfo
+
+func (b byFormatSequence) Less(i, j int) bool {
+	return b[i].sequence > b[j].sequence
+}
+
+func (b byFormatSequence) Swap(i, j int) {
+	b[i], b[j] = b[j], b[i]
+}
+
+func (b byFormatSequence) Len() int {
+	return len(b)
 }
 
 func NewOutput(opts ...OutputOption) Output {
@@ -57,8 +218,9 @@ func NewOutput(opts ...OutputOption) Output {
 	if len(options.Name) == 0 {
 		options.Name = DefaultOutputName
 	}
-    FileNumber = FileNumber + 1   // 每次创建文件，序号 + 1
-	f, err := los.OpenFile(options.Name + strconv.Itoa(FileNumber), los.O_CREATE|los.O_APPEND|los.O_WRONLY, 0666)
+
+	// move files..
+	f, err := los.OpenFile(options.Name, los.O_CREATE|los.O_APPEND|los.O_WRONLY, 0666)
 
 	return &output{
 		opts: options,
@@ -66,3 +228,4 @@ func NewOutput(opts ...OutputOption) Output {
 		f:    f,
 	}
 }
+

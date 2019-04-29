@@ -7,7 +7,7 @@ package file
 */
 
 import (
-	"github.com/log"
+	"log/log"
 )
 
 func NewOutput(opts ...log.OutputOption) log.Output {

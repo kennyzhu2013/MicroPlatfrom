@@ -12,15 +12,16 @@ const (
 	ErrorLevel Level = 3
 	FatalLevel Level = 4
 
-	DefaultFileSize int64 = 1024
+	// this is very small. must be modified.
+	DefaultFileSize int64 = 1024 // for test , must be 1M in production.
+	DefaultFileMaxNum int = 1024
 )
 
 type Level int32
 
 type Fields map[string]string
 
-// A structure log interface which can
-// output to multiple backends.
+// A structure log interface which can output to multiple back-ends.
 type Log interface {
 	Init(opts ...Option) error
 	Options() Options
@@ -60,14 +61,12 @@ type Event struct {
 type Output interface {
 	// Send an event
 	Send(*Event) error
-	// Flush any buffered events
-	Flush() error
+
 	// Discard the output
 	Close() error
+
 	// Name of output
 	String() string
-	// sjlin 新增判断文件是否超过指定大小
-	IsFull() bool
 }
 
 type Option func(o *Options)
@@ -76,9 +75,11 @@ type OutputOption func(o *OutputOptions)
 
 var (
 	DefaultLevel      Level = InfoLevel
-	DefaultOutputName       = "log.json"
-	FileNumber        int = 0     // sjlin 新增日志文件序号
+	DefaultOutputName       = "server.log"
+
+	// file sequences.
 	FileSize          int64 = DefaultFileSize
+
 
 	Levels = map[Level]string{
 		DebugLevel: "debug",
