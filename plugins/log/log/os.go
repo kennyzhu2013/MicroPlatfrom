@@ -32,7 +32,7 @@ func newOS(opts ...Option) Log {
 	}
 
 	if options.Op == nil {
-		options.Op = NewOutput( OutputName(options.OpOption.Name) )
+		options.Op = NewOutput( OutputDir(options.OpOption.Dir), OutputName(options.OpOption.Name) )
 	}
 
 	// https://blog.csdn.net/linuxandroidwince/article/details/79113398...

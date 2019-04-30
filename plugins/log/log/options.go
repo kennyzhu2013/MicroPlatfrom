@@ -25,8 +25,9 @@ type Options struct {
 }
 
 type OutputOptions struct {
-	// file path, url, etc
+	// file path, url, etc, Dir default is ""
 	Name string
+	Dir  string
 }
 
 // Log options
@@ -56,9 +57,21 @@ func WithName(name string) Option {
 	}
 }
 
+func WithDir(dir string) Option {
+	return func(o *Options) {
+		o.OpOption.Dir = dir
+	}
+}
+
 // Output options
 func OutputName(name string) OutputOption {
 	return func(o *OutputOptions) {
 		o.Name = name
+	}
+}
+
+func OutputDir(dir string) OutputOption {
+	return func(o *OutputOptions) {
+		o.Dir = dir
 	}
 }

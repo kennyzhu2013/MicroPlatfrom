@@ -49,7 +49,11 @@ func (o *output) Send(e *Event) error {
 	} else {
 		// judge is full.
 		if info.Size() >= FileSize {
-			o.rotate()
+			// rotate directly
+			// o.rotate()
+			if err = o.rollRunOnce();err != nil {
+				_ = fmt.Errorf("rollRunOnce failed: %s", err)
+			}
 		}
 	}
 
@@ -95,17 +99,14 @@ func (o *output) close() error {
 // openNew opens a new log file for writing, moving any old log file out of the
 // way.  This methods assumes the file has already been closed.
 func (o *output) openNew() error {
-	f, err := los.OpenFile(o.opts.Name, los.O_CREATE|los.O_APPEND|los.O_WRONLY, 0666)
+	f, err := los.OpenFile(o.dirs + "/" +o.opts.Name, los.O_CREATE|los.O_APPEND|los.O_WRONLY, 0666)
 	o.f = f
+	fmt.Println()
 	return err
 }
 
 // if file is full, move..
 func (o *output)rotate()  error {
-	if err := o.close(); err != nil {
-		return err
-	}
-
 	// sync run.
 	o.startRoll.Do(func() {
 		o.rollCh = make(chan bool, 1)
@@ -114,11 +115,6 @@ func (o *output)rotate()  error {
 	select {
 	case o.rollCh <- true:
 	default:
-	}
-
-	// after rotate, then create new.
-	if err := o.openNew(); err != nil {
-		return err
 	}
 
 	return nil
@@ -130,6 +126,10 @@ func (o *output) rollRunOnce() error {
 		return err
 	}
 
+	if err := o.close(); err != nil {
+		return err
+	}
+
 	dir := o.dir()
 	for _, f := range files {
 		if f.sequence + 1 >= DefaultFileMaxNum {
@@ -137,6 +137,7 @@ func (o *output) rollRunOnce() error {
 			if err == nil && errRemove != nil {
 				err = errRemove
 			}
+			fmt.Printf("Remove file:%s\n", filepath.Join(dir, f.Name()))
 			continue
 		}
 
@@ -145,6 +146,12 @@ func (o *output) rollRunOnce() error {
 		if err == nil && errMove != nil {
 			err = errMove
 		}
+		fmt.Printf("Moved new file:source [%s], new [%s]\n", filepath.Join(dir, f.Name()), filepath.Join(dir, o.nextFileName(f.sequence)))
+	}
+
+	// after rotate, then create new.
+	if err := o.openNew(); err != nil {
+		return err
 	}
 
 	return err
@@ -157,9 +164,9 @@ func (o *output) nextFileName(i int) string {
 // dir returns the directory for the current filename.
 func (o *output) dir() string {
 	if o.dirs == "" {
-		o.dirs = o.f.Name()
+		o.dirs = filepath.Dir( o.f.Name() )
 	}
-	return filepath.Dir(o.dirs)
+	return o.dirs
 }
 
 // oldLogFiles returns the list of backup log files stored in the same
@@ -179,9 +186,16 @@ func (o *output) oldLogFiles() ([]logInfo, error) {
 		}
 		if strings.HasPrefix(f.Name(), prefix) {
 			filename := f.Name()
-			ts := filename[len(prefix) : ]
-			sequence,_ := strconv.Atoi(ts)
+			var sequence int = 0
+			if len(filename) > len(prefix) {
+				ts := filename[len(prefix)+1 : ]
+				if ts != "" {
+					sequence,_ = strconv.Atoi(ts)
+				}
+			}
+
 			logFiles = append(logFiles, logInfo{sequence, f})
+			fmt.Printf("Found log file:name [%s], sequence [%d]\n",f.Name(), sequence)
 			continue
 		}
 
@@ -190,7 +204,6 @@ func (o *output) oldLogFiles() ([]logInfo, error) {
 	}
 
 	sort.Sort( byFormatSequence(logFiles) )
-
 	return logFiles, nil
 }
 
@@ -220,12 +233,13 @@ func NewOutput(opts ...OutputOption) Output {
 	}
 
 	// move files..
-	f, err := los.OpenFile(options.Name, los.O_CREATE|los.O_APPEND|los.O_WRONLY, 0666)
+	f, err := los.OpenFile(options.Dir + "/" + options.Name, los.O_CREATE|los.O_APPEND|los.O_WRONLY, 0666)
 
 	return &output{
 		opts: options,
 		err:  err,
 		f:    f,
+		dirs: filepath.Dir( options.Dir + options.Name ),
 	}
 }
 

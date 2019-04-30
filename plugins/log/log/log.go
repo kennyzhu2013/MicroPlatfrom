@@ -13,7 +13,7 @@ const (
 	FatalLevel Level = 4
 
 	// this is very small. must be modified.
-	DefaultFileSize int64 = 1024 // for test , must be 1M in production.
+	DefaultFileSize int64 = 1024*1024 // for test , must be 1M at least in production.
 	DefaultFileMaxNum int = 1024
 )
 
