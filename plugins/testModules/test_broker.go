@@ -5,7 +5,7 @@
 @Software: GoLand
 @Others:
 */
-package testModules
+package main
 
 import (
 	"time"
@@ -53,8 +53,8 @@ func sub() {
 
 func main() {
 	cmd.Init()
-
-	if err := rbroker.Init(); err != nil {
+	broker.DefaultBroker = rbroker
+	if err := rbroker.Init( broker.Addrs("amqp://admin:cmcc888@10.153.90.11:5672") ); err != nil {
 		log.Fatalf("Broker Init error: %v", err)
 	}
 	if err := rbroker.Connect(); err != nil {
