@@ -11,6 +11,7 @@ import (
 	"testing"
 	"github.com/streadway/amqp"
 	"crypto/tls"
+	"errors"
 )
 
 func TestNewRabbitMQConnURL(t *testing.T) {

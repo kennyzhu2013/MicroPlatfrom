@@ -17,10 +17,14 @@ import (
 
 var (
 	defaultGinMetricPrefix = "gin"
-	DefaultPrometheus = NewGinHandlerWrapper()
+	DefaultPrometheus gin.HandlerFunc
 )
 
 type Option func(o *Options)
+
+func InitDefault(opts ...Option)  {
+	DefaultPrometheus = NewGinHandlerWrapper(opts ...)
+}
 
 // for gin wrapper, support goroutine
 func NewGinHandlerWrapper(opts ...Option) gin.HandlerFunc {
@@ -57,8 +61,8 @@ func NewGinHandlerWrapper(opts ...Option) gin.HandlerFunc {
 	timeCounterSummary := prometheus.NewSummaryVec(
 		prometheus.SummaryOpts{
 			Namespace: gopts.Namespace,
-			Name:      "upstream_latency_microseconds",
-			Help:      "Service backend method request latencies in microseconds",
+			Name:      "upstream_latency_milliseconds",
+			Help:      "Service backend method request latencies in milliseconds",
 		},
 		[]string{"method"},
 	)
@@ -82,20 +86,33 @@ func NewGinHandlerWrapper(opts ...Option) gin.HandlerFunc {
 		timeCounterHistogram,
 	)
 
+	for k, v := range gopts.Function {
+		appGaugeFunc := prometheus.NewGaugeFunc(
+			prometheus.GaugeOpts{
+				Namespace: gopts.Namespace,
+				Name:      k,
+				Help:      "Service gauge function of " + k,
+			},
+			v, // with option to define.
+		)
+		_ = wrapreg.Register( appGaugeFunc )
+	}
+
 	prometheus.DefaultGatherer = reg
 	prometheus.DefaultRegisterer = wrapreg
 
 	return func(ctx *gin.Context) {
 		// name here may be the domain name if dns query used
 		var name string
-		if ctx.Request.Host != "" {
-			name = ctx.Request.Host
+		if ctx.Request.URL != nil {
+			name = ctx.Request.URL.Path
 		} else {
-			name = ctx.Request.URL.Host
+			// all request url include parameters.
+			name = ctx.Request.RequestURI
 		}
 
 		timer := prometheus.NewTimer(prometheus.ObserverFunc(func(v float64) {
-			us := v * 1000000 // make microseconds
+			us := v * 1000 // make milliseconds, 1 millisecond = 1000 microsecond
 			timeCounterSummary.WithLabelValues(name).Observe(us)
 			timeCounterHistogram.WithLabelValues(name).Observe(v)
 		}))
@@ -103,7 +120,7 @@ func NewGinHandlerWrapper(opts ...Option) gin.HandlerFunc {
 
 		// call and judge the result.
 		ctx.Next()
-		if statusCode := ctx.Writer.Status(); statusCode >= http.StatusMultipleChoices {
+		if statusCode := ctx.Writer.Status(); statusCode < http.StatusMultipleChoices {
 			opsCounter.WithLabelValues(name, "success").Inc()
 		} else {
 			opsCounter.WithLabelValues(name, "fail").Inc()

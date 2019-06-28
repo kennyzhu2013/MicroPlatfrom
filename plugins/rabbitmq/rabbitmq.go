@@ -10,10 +10,13 @@ package rabbitmq
 import (
 	"context"
 	"errors"
-	"github.com/micro/go-micro/broker"
+	// "github.com/micro/go-micro/cmd"
+
+	"broker"
+
 	"sync"
-	"github.com/micro/go-micro/cmd"
 	"time"
+
 	"github.com/streadway/amqp"
 )
 
@@ -48,10 +51,10 @@ type publication struct {
 
 func init() {
 	// for micro commands.
-	cmd.DefaultBrokers["rabbitmq"] = NewBroker
+	// cmd.DefaultBrokers["rabbitmq"] = NewBroker
 
 	// for micro service application.
-	broker.DefaultBroker = NewBroker()
+	// broker.DefaultBroker = NewBroker()
 }
 
 func (p *publication) Ack() error {

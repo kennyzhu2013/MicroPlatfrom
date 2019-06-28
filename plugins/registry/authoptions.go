@@ -1,8 +1,7 @@
-package etcdv3
+package registry
 
 import (
 	"context"
-
 	"github.com/micro/go-micro/registry"
 )
 

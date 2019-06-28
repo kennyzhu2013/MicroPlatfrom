@@ -12,6 +12,7 @@ type Options struct {
 	Id            string
 	Version    	  string
 	MetaData      map[string]string
+	Function      map[string]func() float64
 }
 
 
@@ -36,5 +37,11 @@ func Version(n string) Option {
 func MetaData(n map[string]string) Option {
 	return func(o *Options) {
 		o.MetaData = n
+	}
+}
+
+func Function(n map[string]func() float64) Option {
+	return func(o *Options) {
+		o.Function = n
 	}
 }

@@ -8,7 +8,8 @@
 package monitor
 
 import (
-	"github.com/micro/go-micro/registry"
+	// "github.com/micro/go-micro/registry"
+	"registry"
 )
 
 // Discovery builds on the registry for heart-beating and client metric
@@ -20,10 +21,10 @@ type Monitor interface {
 }
 
 type NewRegistry func(...registry.Option) registry.Registry
-var (
-	// use et-cd instead if online.
-	DefaultMonitor = NewMonitor(registry.NewRegistry)
-)
+// var (
+// 	// use et-cd instead if online.
+// 	DefaultMonitor = NewMonitor(registry.NewRegistry)
+// )
 
 // this func open heart-beat
 func NewMonitor(newRegistry NewRegistry, opts ...registry.Option) Monitor {

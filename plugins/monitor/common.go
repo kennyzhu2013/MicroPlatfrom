@@ -8,7 +8,8 @@
 package monitor
 
 import (
-	"github.com/micro/go-micro/registry"
+	// "github.com/micro/go-micro/registry"
+	"registry"
 	"time"
 )
 
@@ -24,6 +25,7 @@ type Heartbeat struct {
 const (
 	// default ttl value
     HeartBeatTTL = time.Second * 60
+	HeartBeatCheck = time.Second * 15
 
 	// state define here.
 	ServiceStatus = "ServiceStatus"
@@ -33,6 +35,6 @@ const (
 
 	// for Bucket algorithm .
 	maxCalls  = 2000
-	upLimits = int(maxCalls * 0.9)
-	downLimits = int(maxCalls * 0.7)
+	UpLimits = int(maxCalls * 0.9)
+	DownLimits = int(maxCalls * 0.7)
 )

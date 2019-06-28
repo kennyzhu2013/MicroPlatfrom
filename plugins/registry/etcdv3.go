@@ -1,5 +1,5 @@
 // Package etcdv3 provides an etcd version 3 registry
-package etcdv3
+package registry
 
 import (
 	"context"
@@ -11,8 +11,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/micro/go-micro/cmd"
-	"github.com/micro/go-micro/registry"
 	"go.etcd.io/etcd/clientv3"
 
 	hash "github.com/mitchellh/hashstructure"
@@ -25,19 +23,19 @@ var (
 
 type etcdv3Registry struct {
 	client  *clientv3.Client
-	options registry.Options
+	options Options
 	sync.Mutex
 	register map[string]uint64
 	leases   map[string]clientv3.LeaseID
 }
 
-var DefaultEtcdRegistry registry.Registry = NewRegistry()
+// var DefaultEtcdRegistry registry.Registry = NewRegistry()
 
 func init() {
-	cmd.DefaultRegistries["etcdv3"] = NewRegistry
+	// cmd.DefaultRegistries["etcdv3"] = NewRegistry
 }
 
-func configure(e *etcdv3Registry, opts ...registry.Option) error {
+func configure(e *etcdv3Registry, opts ...Option) error {
 	config := clientv3.Config{
 		Endpoints: []string{"127.0.0.1:2379"},
 	}
@@ -91,14 +89,14 @@ func configure(e *etcdv3Registry, opts ...registry.Option) error {
 	return nil
 }
 
-func encode(s *registry.Service) string {
+func encode(s *Service) string {
 	b, _ := json.Marshal(s)
 	return string(b)
 }
 
-func decode(ds []byte) *registry.Service {
-	var s *registry.Service
-	json.Unmarshal(ds, &s)
+func decode(ds []byte) *Service {
+	var s *Service
+	_ = json.Unmarshal(ds, &s)
 	return s
 }
 
@@ -112,17 +110,17 @@ func servicePath(s string) string {
 	return path.Join(prefix, strings.Replace(s, "/", "-", -1))
 }
 
-func (e *etcdv3Registry) Init(opts ...registry.Option) error {
+func (e *etcdv3Registry) Init(opts ...Option) error {
 	return configure(e, opts...)
 }
 
-func (e *etcdv3Registry) Options() registry.Options {
+func (e *etcdv3Registry) Options() Options {
 	return e.options
 }
 
-func (e *etcdv3Registry) Deregister(s *registry.Service) error {
+func (e *etcdv3Registry) Deregister(s *Service) error {
 	if len(s.Nodes) == 0 {
-		return errors.New("Require at least one node")
+		return errors.New("Require at least one node ")
 	}
 
 	e.Lock()
@@ -144,9 +142,9 @@ func (e *etcdv3Registry) Deregister(s *registry.Service) error {
 	return nil
 }
 
-func (e *etcdv3Registry) Register(s *registry.Service, opts ...registry.RegisterOption) error {
+func (e *etcdv3Registry) Register(s *Service, opts ...RegisterOption) error {
 	if len(s.Nodes) == 0 {
-		return errors.New("Require at least one node")
+		return errors.New("Require at least one node " )
 	}
 
 	var leaseNotFound bool
@@ -179,14 +177,14 @@ func (e *etcdv3Registry) Register(s *registry.Service, opts ...registry.Register
 		return nil
 	}
 
-	service := &registry.Service{
+	service := &Service{
 		Name:      s.Name,
 		Version:   s.Version,
 		Metadata:  s.Metadata,
 		Endpoints: s.Endpoints,
 	}
 
-	var options registry.RegisterOptions
+	var options RegisterOptions
 	for _, o := range opts {
 		o(&options)
 	}
@@ -203,7 +201,7 @@ func (e *etcdv3Registry) Register(s *registry.Service, opts ...registry.Register
 	}
 
 	for _, node := range s.Nodes {
-		service.Nodes = []*registry.Node{node}
+		service.Nodes = []*Node{node}
 		if lgr != nil {
 			_, err = e.client.Put(ctx, nodePath(service.Name, node.Id), encode(service), clientv3.WithLease(lgr.ID))
 		} else {
@@ -226,7 +224,7 @@ func (e *etcdv3Registry) Register(s *registry.Service, opts ...registry.Register
 	return nil
 }
 
-func (e *etcdv3Registry) GetService(name string) ([]*registry.Service, error) {
+func (e *etcdv3Registry) GetService(name string) ([]*Service, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), e.options.Timeout)
 	defer cancel()
 
@@ -236,16 +234,16 @@ func (e *etcdv3Registry) GetService(name string) ([]*registry.Service, error) {
 	}
 
 	if len(rsp.Kvs) == 0 {
-		return nil, registry.ErrNotFound
+		return nil, ErrNotFound
 	}
 
-	serviceMap := map[string]*registry.Service{}
+	serviceMap := map[string]*Service{}
 
 	for _, n := range rsp.Kvs {
 		if sn := decode(n.Value); sn != nil {
 			s, ok := serviceMap[sn.Version]
 			if !ok {
-				s = &registry.Service{
+				s = &Service{
 					Name:      sn.Name,
 					Version:   sn.Version,
 					Metadata:  sn.Metadata,
@@ -260,15 +258,15 @@ func (e *etcdv3Registry) GetService(name string) ([]*registry.Service, error) {
 		}
 	}
 
-	var services []*registry.Service
+	var services []*Service
 	for _, service := range serviceMap {
 		services = append(services, service)
 	}
 	return services, nil
 }
 
-func (e *etcdv3Registry) ListServices() ([]*registry.Service, error) {
-	var services []*registry.Service
+func (e *etcdv3Registry) ListServices() ([]*Service, error) {
+	var services []*Service
 	nameSet := make(map[string]struct{})
 
 	ctx, cancel := context.WithTimeout(context.Background(), e.options.Timeout)
@@ -280,7 +278,7 @@ func (e *etcdv3Registry) ListServices() ([]*registry.Service, error) {
 	}
 
 	if len(rsp.Kvs) == 0 {
-		return []*registry.Service{}, nil
+		return []*Service{}, nil
 	}
 
 	for _, n := range rsp.Kvs {
@@ -289,7 +287,7 @@ func (e *etcdv3Registry) ListServices() ([]*registry.Service, error) {
 		}
 	}
 	for k := range nameSet {
-		service := &registry.Service{}
+		service := &Service{}
 		service.Name = k
 		services = append(services, service)
 	}
@@ -297,7 +295,7 @@ func (e *etcdv3Registry) ListServices() ([]*registry.Service, error) {
 	return services, nil
 }
 
-func (e *etcdv3Registry) Watch(opts ...registry.WatchOption) (registry.Watcher, error) {
+func (e *etcdv3Registry) Watch(opts ...WatchOption) (Watcher, error) {
 	return newEtcdv3Watcher(e, e.options.Timeout, opts...)
 }
 
@@ -305,12 +303,12 @@ func (e *etcdv3Registry) String() string {
 	return "etcdv3"
 }
 
-func NewRegistry(opts ...registry.Option) registry.Registry {
+func NewRegistry(opts ...Option) Registry {
 	e := &etcdv3Registry{
-		options:  registry.Options{},
+		options:  Options{},
 		register: make(map[string]uint64),
 		leases:   make(map[string]clientv3.LeaseID),
 	}
-	configure(e, opts...)
+	_ = configure(e, opts...)
 	return e
 }

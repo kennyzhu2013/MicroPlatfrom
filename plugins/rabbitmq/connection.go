@@ -19,7 +19,7 @@ import (
 var (
 	// exchange name
 	DefaultExchange = exchange{
-		name: "recording",
+		name: "exchange",
 	}
 	DefaultRabbitURL      = "amqp://guest:guest@127.0.0.1:5672"
 

@@ -7,7 +7,7 @@
 */
 package rabbitmq
 
-import "github.com/micro/go-micro/broker"
+import "broker"
 import "context"
 
 // setSubscribeOption returns a function to setup a context with given value

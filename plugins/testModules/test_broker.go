@@ -9,16 +9,19 @@ package main
 
 import (
 	"time"
+
 	"fmt"
 	"log"
 
 	"rabbitmq"
-	"github.com/micro/go-micro/cmd"
-	"github.com/micro/go-micro/broker"
+
+	"broker"
+	"encoding/json"
 )
 
 var (
-	topic = "go.micro.topic.foo"
+	storeTopic = "recording.store"
+	audioTopic = "recording.audio"
 	rbroker = rabbitmq.NewBroker()
 )
 
@@ -26,13 +29,21 @@ func pub() {
 	tick := time.NewTicker(time.Second)
 	i := 0
 	for _ = range tick.C {
+		var params struct {
+			LeftFilename  string
+			RightFilename string
+		}
+
+		params.LeftFilename = "/tmp/record/z9hG4bK10629d31d11b4syd6sz16s9w9042buu6z@139.120.40.22_early_left.amr"
+		params.RightFilename = "/tmp/record/z9hG4bK10629d31d11b4syd6sz16s9w9042buu6z@139.120.40.22_early_right.amr"
+		prefersJson,_ := json.Marshal( params )
 		msg := &broker.Message{
 			Header: map[string]string{
 				"id": fmt.Sprintf("%d", i),
 			},
-			Body: []byte(fmt.Sprintf("%d: %s", i, time.Now().String())),
+			Body: []byte(prefersJson),
 		}
-		if err := rbroker.Publish(topic, msg); err != nil {
+		if err := rbroker.Publish(storeTopic, msg); err != nil {
 			log.Printf("[pub] failed: %v", err)
 		} else {
 			fmt.Println("[pub] pubbed message:", string(msg.Body))
@@ -41,8 +52,32 @@ func pub() {
 	}
 }
 
+func pub2() {
+	tick := time.NewTicker(time.Second)
+	i := 0
+	for _ = range tick.C {
+		var params struct {
+			CallId   string
+		}
+
+		params.CallId = "z9hG4bK10629d31d11b4syd6sz16s9w9042buu6z"
+		prefersJson,_ := json.Marshal( params )
+		msg := &broker.Message{
+			Header: map[string]string{
+				"id": fmt.Sprintf("%d", i),
+			},
+			Body: []byte(prefersJson),
+		}
+		if err := rbroker.Publish(audioTopic, msg); err != nil {
+			log.Printf("[pub] failed: %v", err)
+		} else {
+			fmt.Println("[pub] pubbed message:", string(msg.Body))
+		}
+		i++
+	}
+}
 func sub() {
-	_, err := rbroker.Subscribe(topic, func(p broker.Publication) error {
+	_, err := rbroker.Subscribe(storeTopic, func(p broker.Publication) error {
 		fmt.Println("[sub] received message:", string(p.Message().Body), "header", p.Message().Header)
 		return nil
 	})
@@ -52,8 +87,8 @@ func sub() {
 }
 
 func main() {
-	cmd.Init()
-	broker.DefaultBroker = rbroker
+	// cmd.Init()
+	// broker.DefaultBroker = rbroker
 	if err := rbroker.Init( broker.Addrs("amqp://admin:cmcc888@10.153.90.11:5672") ); err != nil {
 		log.Fatalf("Broker Init error: %v", err)
 	}
@@ -63,6 +98,7 @@ func main() {
 
 	go pub()
 	go sub()
+	// go pub2()
 
-	<-time.After(time.Second * 10)
+	<-time.After(time.Second * 60)
 }

@@ -3,6 +3,8 @@ package log
 import (
 	"encoding/json"
 	los "os"
+	"reflect"
+	"runtime"
 	"strconv"
 
 	"sync"
@@ -222,6 +224,28 @@ func (b byFormatSequence) Len() int {
 	return len(b)
 }
 
+// 用 seps 进行分割, 根据协议栈信息查找...
+func GetFunctionName(i interface{}, seps ...rune) string {
+	fn := runtime.FuncForPC(reflect.ValueOf(i).Pointer()).Name()
+
+	fields := strings.FieldsFunc(fn, func(sep rune) bool {
+		for _, s := range seps {
+			if sep == s {
+				return true
+			}
+		}
+		return false
+	})
+
+	// fmt.Println(fields)
+
+	if size := len(fields); size > 0 {
+		return fields[size-1]
+	}
+	return ""
+}
+
+
 func NewOutput(opts ...OutputOption) Output {
 	var options OutputOptions
 	for _, o := range opts {
@@ -233,13 +257,19 @@ func NewOutput(opts ...OutputOption) Output {
 	}
 
 	// move files..
-	f, err := los.OpenFile(options.Dir + "/" + options.Name, los.O_CREATE|los.O_APPEND|los.O_WRONLY, 0666)
+	var logDir string
+	if options.Dir != "" {
+		logDir = options.Dir + "/" + options.Name
+	}else {
+		logDir = options.Name
+	}
+	f, err := los.OpenFile(logDir, los.O_CREATE|los.O_APPEND|los.O_WRONLY, 0666)
 
 	return &output{
 		opts: options,
 		err:  err,
 		f:    f,
-		dirs: filepath.Dir( options.Dir + options.Name ),
+		dirs: filepath.Dir( logDir ),
 	}
 }
 

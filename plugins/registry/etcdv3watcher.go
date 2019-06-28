@@ -1,11 +1,10 @@
-package etcdv3
+package registry
 
 import (
 	"context"
 	"errors"
 	"time"
 
-	"github.com/micro/go-micro/registry"
 	"go.etcd.io/etcd/clientv3"
 )
 
@@ -16,8 +15,8 @@ type etcdv3Watcher struct {
 	timeout time.Duration
 }
 
-func newEtcdv3Watcher(r *etcdv3Registry, timeout time.Duration, opts ...registry.WatchOption) (registry.Watcher, error) {
-	var wo registry.WatchOptions
+func newEtcdv3Watcher(r *etcdv3Registry, timeout time.Duration, opts ...WatchOption) (Watcher, error) {
+	var wo WatchOptions
 	for _, o := range opts {
 		o(&wo)
 	}
@@ -43,7 +42,7 @@ func newEtcdv3Watcher(r *etcdv3Registry, timeout time.Duration, opts ...registry
 	}, nil
 }
 
-func (ew *etcdv3Watcher) Next() (*registry.Result, error) {
+func (ew *etcdv3Watcher) Next() (*Result, error) {
 	for wresp := range ew.w {
 		if wresp.Err() != nil {
 			return nil, wresp.Err()
@@ -69,7 +68,7 @@ func (ew *etcdv3Watcher) Next() (*registry.Result, error) {
 			if service == nil {
 				continue
 			}
-			return &registry.Result{
+			return &Result{
 				Action:  action,
 				Service: service,
 			}, nil

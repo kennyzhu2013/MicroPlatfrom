@@ -8,13 +8,14 @@
 package monitor
 
 import (
-	"github.com/micro/go-micro/registry"
-	"sync"
 	"context"
-	"time"
+	// "github.com/micro/go-micro/registry"
+	"registry"
 
-	"github.com/kennyzhu/go-os/log"
+	"log/log"
 	"strconv"
+	"sync"
+	"time"
 )
 
 type os struct {
@@ -27,7 +28,7 @@ type os struct {
 	sync.RWMutex
 	// bHeart  bool
 	// cache.
-	heartbeats map[string] *Heartbeat
+	heartbeats map[string] Heartbeat
 }
 
 // use consul default.
@@ -49,14 +50,14 @@ func newOS(newRegistry NewRegistry, opts ...registry.Option) Monitor {
 
 	// set default interval, the same with registry config.
 	if dOpts.Interval == time.Duration(0) {
-		dOpts.Interval = time.Second * 30
+		dOpts.Interval = HeartBeatCheck
 	}
 
 	o := &os{
 		registry:    newRegistry(opts...),
 		opts:       dOpts,
 		exit:       make(chan bool),
-		heartbeats: make(map[string]*Heartbeat),
+		heartbeats: make(map[string] Heartbeat, 1000),
 		// cache:      make(map[string][]*registry.Service), // local cache?..
 	}
 
@@ -79,21 +80,31 @@ func (o *os) run() {
 // )
 func (o *os) heartbeat() {
 	t := time.NewTicker(o.opts.Interval)
+	defer func() {
+		if v := recover();v != nil {
+			log.Errorf("heartbeat panic:%v", v)
+		}
+	}()
 
 	for {
 		select {
 		case <-t.C:
-			var heartbeats [] *Heartbeat
+			var heartbeats [] Heartbeat
 			timeNow := time.Now().Unix()
-			o.RLock()
+			o.Lock()
 			for _, hb := range o.heartbeats {
 				// get not out-dated heartbeats
 				if hb.timestamp + hb.ttl < timeNow {
 					heartbeats = append(heartbeats, hb)
 				}
 			}
-			o.RUnlock()
 
+			// clear heartbeats cache.
+			if len(o.heartbeats) > 1000 {
+				o.heartbeats = make(map[string]Heartbeat, 1000)
+			}
+			o.Unlock()
+			log.Infof("Heartbeats length:%v", len(heartbeats))
 			for _, hb := range heartbeats {
 				hb.timestamp = timeNow
 
@@ -102,9 +113,9 @@ func (o *os) heartbeat() {
 					if node.Id == hb.id {
 						node.Metadata["timestamp"] = strconv.FormatInt(hb.timestamp,10)
 						status := node.Metadata[ServiceStatus]
-						if hb.weights < downLimits {
+						if hb.weights < DownLimits {
 							status = NormalState
-						} else if hb.weights > upLimits  {
+						} else if hb.weights > UpLimits  {
 							status = UpThresh
 						} else {
 							// nothing to do...
@@ -115,11 +126,15 @@ func (o *os) heartbeat() {
 						err := registry.Register( hb.service, registry.RegisterTTL(o.opts.Interval)  )
 						if err != nil {
 							log.Fatal("Heartbeats check failed!")
+							//  fmt.Printf("Heartbeats check failed!\n")
 						}
+						log.Infof("Heartbeats check success,node:%v", node.Id)
+						//  fmt.Printf("Heartbeats check success,node:%v\n", node.Id)
 						break;
 					}
 				}
 			}
+
 		case <-o.exit:
 			return
 		}
@@ -129,14 +144,36 @@ func (o *os) heartbeat() {
 // check heart beat.
 func (o *os) PushHeartBeat(service *registry.Service, weights int)  {
 	o.Lock()
-	hb := &Heartbeat{
+	hb := Heartbeat{
 		id:       service.Nodes[0].Id,
 		service:  service,
 		ttl:      int64((o.opts.Interval.Seconds()) * 2),
+		// timestamp: time.Now().Unix(),
 	}
 
 	o.heartbeats[hb.id] = hb
 	o.Unlock()
+}
+
+// push heartbeat to service directly..
+func UpdateServiceWithoutSync(service *registry.Service, weights int)  {
+	timeNow := time.Now().Unix()
+
+	// service nodes register, here only one
+	for _, node:= range service.Nodes {
+		node.Metadata["timestamp"] = strconv.FormatInt(timeNow, 10)
+		status := node.Metadata[ServiceStatus]
+		if weights < DownLimits {
+			status = NormalState
+		} else if weights > UpLimits {
+			status = UpThresh
+		} else {
+			// nothing to do...
+		}
+		node.Metadata[ServiceStatus] = status
+	}
+
+	// else to do?..
 }
 
 func (o *os) GetMonitorRegistry() registry.Registry {
