@@ -62,6 +62,7 @@ func (s *examples) getPrefernces(ctx *gin.Context) {
 	ctx.JSON(int(response.ResultCode), gin.H{
 		"message": response.Prefer,
 	})
+
 	log.Info("getPrefernces End:")
 	// log.Info(b)
 }

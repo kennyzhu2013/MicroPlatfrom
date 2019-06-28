@@ -1,9 +1,0 @@
-{"timestamp":"2018-8-30 16:48:53","level":"fatal","fields":{},"message":"this is a fatal message"}
-{"timestamp":"2018-8-30 16:48:55","level":"info","fields":{},"message":"this is a info message"}
-{"timestamp":"2018-8-30 16:48:55","level":"warn","fields":{},"message":"this is a warn message"}
-{"timestamp":"2018-8-30 16:48:55","level":"error","fields":{},"message":"this is a error message"}
-{"timestamp":"2018-8-30 16:48:55","level":"fatal","fields":{},"message":"this is a fatal message"}
-{"timestamp":"2018-8-30 16:48:58","level":"info","fields":{},"message":"this is a info message"}
-{"timestamp":"2018-8-30 16:48:58","level":"warn","fields":{},"message":"this is a warn message"}
-{"timestamp":"2018-8-30 16:48:58","level":"error","fields":{},"message":"this is a error message"}
-{"timestamp":"2018-8-30 16:48:58","level":"fatal","fields":{},"message":"this is a fatal message"}

@@ -11,4 +11,5 @@ type Preferences struct {
 	User  int    `xorm:"not null pk autoincr INT(10)"`
 	Name  string `xorm:"not null VARCHAR(32)"`
 	Value string `xorm:"not null VARCHAR(64)"`
+
 }
