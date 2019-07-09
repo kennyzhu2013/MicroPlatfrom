@@ -17,6 +17,7 @@ type Options struct {
 	Registry registry.Registry
 	Selector selector.Strategy
 	Destination   string
+	RouteTag	  string
 
 	// Other options for implementations can be stored in a context. like selector_ttl.
 	Context context.Context
@@ -38,5 +39,11 @@ func WithSelector(s selector.Strategy) Option {
 func WithDestination(d string) Option {
 	return func(o *Options) {
 		o.Destination = d
+	}
+}
+
+func WithRouteTag(d string) Option {
+	return func(o *Options) {
+		o.RouteTag = d
 	}
 }

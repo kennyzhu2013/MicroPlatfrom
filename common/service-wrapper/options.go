@@ -10,7 +10,6 @@ package service_wrapper
 import (
 	"github.com/gin-gonic/gin"
 	"time"
-
 	"registry"
 
 	"context"
@@ -37,8 +36,17 @@ type Options struct {
 	// define gin.Engine
 	Engine *gin.Engine
 
+	// https config
+	Secure      bool
+	TLSConfig   TLSFile
+
 	// Alternative Options
 	Context context.Context
+}
+
+type TLSFile struct {
+	CertFile string
+	KeyFile  string
 }
 
 func newOptions(opts ...Option) Options {
@@ -143,5 +151,19 @@ func Engine(g *gin.Engine) Option {
 func ServiceInfo(s *registry.Service) Option {
 	return func(o *Options) {
 		o.ServiceInfo = s
+	}
+}
+
+// Secure Use secure communication. If TLSConfig is not specified we use InsecureSkipVerify and generate a self signed cert
+func Secure(b bool) Option {
+	return func(o *Options) {
+		o.Secure = b
+	}
+}
+
+// TLSConfig to be used for the transport.
+func TLSConfig(t TLSFile) Option {
+	return func(o *Options) {
+		o.TLSConfig = t
 	}
 }

@@ -18,7 +18,8 @@ func writeLog(log1 mylog.Log)  {
 }
 func main() {
 	mylog.FileSize = 1024
-	log1 := mylog.NewLog(mylog.WithFields(mylog.Fields{"app":"test"}),
+	log1 := mylog.NewLog( mylog.WithLevel(3),
+		mylog.WithFields(mylog.Fields{"app":"test"}),
 		mylog.WithOutput(myfile.NewOutput(mylog.OutputDir(""),
 			mylog.OutputName("server.log"))))
 	log1.Options()

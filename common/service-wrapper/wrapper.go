@@ -10,13 +10,14 @@ package service_wrapper
 import (
 	"net/http"
 	"time"
+	"web"
 
 	"github.com/google/uuid"
 )
 
 // Service is a web service with service discovery built in
 type Service interface {
-	Client() *http.Client
+	Client(opts ...web.Option) *http.Client
 	Options() Options
 	Run() error
 }

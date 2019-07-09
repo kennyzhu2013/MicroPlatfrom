@@ -2,7 +2,6 @@ package registry
 
 import (
 	"context"
-	"github.com/micro/go-micro/registry"
 )
 
 type authKey struct{}
@@ -13,8 +12,8 @@ type authCreds struct {
 }
 
 // Auth allows you to specify username/password
-func Auth(username, password string) registry.Option {
-	return func(o *registry.Options) {
+func Auth(username, password string) Option {
+	return func(o *Options) {
 		if o.Context == nil {
 			o.Context = context.Background()
 		}

@@ -20,7 +20,7 @@ import (
 )
 
 var (
-	storeTopic = "recording.store"
+	storeTopic = "recording.storesession"
 	audioTopic = "recording.audio"
 	rbroker = rabbitmq.NewBroker()
 )
@@ -97,7 +97,7 @@ func main() {
 	}
 
 	go pub()
-	go sub()
+	// go sub()
 	// go pub2()
 
 	<-time.After(time.Second * 60)

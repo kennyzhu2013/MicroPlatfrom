@@ -21,6 +21,7 @@ func NewRoundShardTripper(opts ...Option) http.RoundTripper {
 		Registry: registry.DefaultRegistry,
 		Selector: selector.Random,
 		Destination: "X-Media-Server",
+		RouteTag: "serverId",
 	}
 	for _, o := range opts {
 		o(&options)

@@ -10,6 +10,7 @@ package service_wrapper
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/unrolled/secure"
 	"log/log"
 	"net/http"
 	"os"
@@ -161,11 +162,15 @@ func (s *service) start() error {
 	}
 
 	if s.opts.Engine == nil {
-		// gin.SetMode(gin.ReleaseMode)
+		gin.SetMode(gin.ReleaseMode)
 		s.opts.Engine = gin.Default()
-
 	}
-	go s.opts.Engine.Run(s.opts.Address)
+	if s.opts.Secure  {
+		s.opts.Engine.Use( s.LoadTLS() )
+		go s.opts.Engine.RunTLS(s.opts.Address, s.opts.TLSConfig.CertFile, s.opts.TLSConfig.KeyFile)
+	} else  {
+		go s.opts.Engine.Run(s.opts.Address)
+	}
 
 	// s.exit = make(chan chan error, 1)
 	s.running = true
@@ -192,10 +197,28 @@ func (s *service) stop()  {
 	return
 }
 
+// load tls
+func (s *service) LoadTLS() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		secureMiddleware := secure.New(secure.Options{
+			SSLRedirect: true,
+			SSLHost:     s.opts.Address,
+		})
+		err := secureMiddleware.Process(c.Writer, c.Request)
+
+		// If there was an error, do not continue.
+		if err != nil {
+			return
+		}
+
+		c.Next()
+	}
+}
+
 // for http-client, must add own rt.
-func (s *service) Client() *http.Client {
+func (s *service) Client(opts ...web.Option) *http.Client {
 	// use random selector and  replace http.NewRoundTripper with web tripper
-	rt := web.NewRoundShardTripper( web.WithRegistry(registry.DefaultRegistry) )
+	rt := web.NewRoundShardTripper( opts... )
 
 	return &http.Client{
 		Transport: rt,

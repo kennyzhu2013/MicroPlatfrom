@@ -18,6 +18,7 @@ import (
 )
 
 var (
+	// default micro registry prefix
 	prefix = "/micro-registry"
 )
 

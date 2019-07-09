@@ -33,7 +33,7 @@ const (
 	UpThresh = "upThresh"
 	DownThresh = "downThresh"
 
-	// for Bucket algorithm .
+	// for Bucket algorithm, must to options func .
 	maxCalls  = 2000
 	UpLimits = int(maxCalls * 0.9)
 	DownLimits = int(maxCalls * 0.7)

@@ -9,10 +9,9 @@ package monitor
 
 
 import (
-"time"
-
-"github.com/micro/go-micro/registry"
-"context"
+	"context"
+	"registry"
+	"time"
 )
 
 type optionsKey struct{}

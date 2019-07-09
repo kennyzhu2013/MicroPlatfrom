@@ -40,6 +40,7 @@ func (r *roundShardTripper) RoundTrip(req *http.Request) (*http.Response, error)
 	// s, err := r.opts.Registry.GetService(req.URL.Host)
 	s, err := r.rc.GetService(req.URL.Host)
 	if err != nil {
+		log.Errorf("RoundTrip: error:%v", err )
 		return nil, err
 	}
 
@@ -72,7 +73,7 @@ func (r *roundShardTripper) RoundTrip(req *http.Request) (*http.Response, error)
 	for _, service := range s {
 		for _, node := range service.Nodes {
 			// if node.Address == proxyIp && node.Port == proxyPort {
-			if node.Id == serverId {
+			if node.Metadata[r.opts.RouteTag] == serverId {
 				nodeResult = node
 			}
 		}
@@ -94,7 +95,7 @@ func (r *roundShardTripper) RoundTrip(req *http.Request) (*http.Response, error)
 
 	// get destination header.
 	// w.Header.Add(r.opts.Destination, req.URL.Host)
-	w.Header.Add(r.opts.Destination, nodeResult.Id)
+	w.Header.Add(r.opts.Destination, nodeResult.Metadata[r.opts.RouteTag])
 	log.Infof("RoundTrip done, header[%v] is set to: %v, host:%v!", r.opts.Destination, nodeResult.Id, req.URL.Host)
 	return w, nil
 }
@@ -129,10 +130,10 @@ func (r *roundShardTripper)  roundTrip(s []*registry.Service, req *http.Request)
 
 		// if success, add media-server
 		// w.Header.Add(r.opts.Destination, req.URL.Host)
-		w.Header.Add(r.opts.Destination, n.Id)
+		w.Header.Add(r.opts.Destination, n.Metadata[r.opts.RouteTag])
 		// w.Header[] = make([]string, 1, 1)
 		// w.Header[r.opts.Destination][0] = req.URL.Host
-		log.Infof("roundTrip success, header[%v] is set to: %v, host: %v!", r.opts.Destination, n.Id, req.URL.Host)
+		log.Infof("roundTrip success, header[%v] is set to: %v, host: %v!", r.opts.Destination, n.Metadata[r.opts.RouteTag], req.URL.Host)
 		return w, nil
 	}
 

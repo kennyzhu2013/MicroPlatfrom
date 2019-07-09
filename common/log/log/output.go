@@ -1,18 +1,20 @@
 package log
 
 import (
+	"bytes"
 	"encoding/json"
 	los "os"
+	"os/exec"
 	"reflect"
 	"runtime"
 	"strconv"
 
-	"sync"
-	"sort"
-	"io/ioutil"
 	"fmt"
+	"io/ioutil"
 	"path/filepath"
+	"sort"
 	"strings"
+	"sync"
 )
 
 type output struct {
@@ -245,6 +247,18 @@ func GetFunctionName(i interface{}, seps ...rune) string {
 	return ""
 }
 
+func pathExists(path string) (bool, error) {
+	_, err := los.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+
+	if los.IsNotExist(err) {
+		return false, nil
+	}
+
+	return false, err
+}
 
 func NewOutput(opts ...OutputOption) Output {
 	var options OutputOptions
@@ -259,6 +273,17 @@ func NewOutput(opts ...OutputOption) Output {
 	// move files..
 	var logDir string
 	if options.Dir != "" {
+		// create if not exist
+		if bExist,_ := pathExists( options.Dir ); !bExist {
+			const shellToUse = "bash"
+			var stdout bytes.Buffer
+			var stderr bytes.Buffer
+			command := fmt.Sprintf("mkdir -p  %s", options.Dir)
+			cmd := exec.Command(shellToUse, "-c", command)
+			cmd.Stdout = &stdout
+			cmd.Stderr = &stderr
+			_ = cmd.Run()
+		}
 		logDir = options.Dir + "/" + options.Name
 	}else {
 		logDir = options.Name
